@@ -1,6 +1,4 @@
 # Private data that must be ignored
-## unencrypted indexed data
-data/index_dir
 ## personal files input dir
 data/input
 ## running logs, will contains personal file names
