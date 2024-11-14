@@ -1,0 +1,46 @@
+# Private data that must be ignored
+## unencrypted indexed data
+data/index_dir
+## personal files input dir
+data/input
+## running logs, will contains personal file names
+data/logs.log 
+## unencrypted sqlite database, will contains all data of personal files
+data/*.db
+
+
+
+
+# default ignore
+# Python
+__pycache__/
+bin/
+include/
+lib/
+lib64
+pyvenv.cfg
+*.py[cod]
+*.env
+venv/
+.venv/
+
+
+
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+
+# Logs and data
+*.log
+test_data/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Cache
+.pytest_cache/
+
+

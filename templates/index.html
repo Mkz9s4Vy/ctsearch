@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <style>
+        body{
+            background-color: #2d2e2f;
+        }
+        .centered-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh; /* 使表单占据整个视口高度 */
+        }
+        
+        .logo {
+            width: 600px; /* 限制宽度 */
+            height: auto; /* 保持宽高比 */
+            margin-bottom: 10px;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 600px;
+            height: 50px;
+            padding: 10px 30px 10px 30px;
+            margin: 5px;
+        }
+
+        form {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+
+        .search-input {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            font-size: 18px;
+            border: none;
+            border-radius: 64px;
+            background-color: #e0e0e0;
+            color: #000000;
+            text-align: left;
+            text-decoration: none;
+            cursor: text;
+            padding: 0 32px 0 32px;
+            margin: 0;
+        }
+        /* .search-input::placeholder {
+            text-align: center;
+        } */
+
+    </style>
+</head>
+<body>
+    <div class="centered-form">
+        <img class="logo" src="{{ url_for('static', filename='logo-font-white.svg') }}" alt="Logo">
+        <!-- <h1>Search</h1> -->
+        <div class="search-container">
+            <form action="/search" method="get">
+                <input type="text" class="search-input" name="q" placeholder="输入关键词并回车开始搜索">
+                <!-- <button type="submit" class="button">Search</button> -->
+            </form>
+        </div>
+    </div>
+</body>
+</html>
