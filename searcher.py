@@ -5,7 +5,22 @@ import atexit
 from flask import Flask, request, render_template, render_template_string, redirect, url_for, jsonify
 import os
 import markdown
+from markdown.extensions.toc import TocExtension
+from markdown.extensions.tables import TableExtension
+from markdown.extensions.fenced_code import FencedCodeExtension
+from markdown.extensions.codehilite import CodeHiliteExtension
 from markdown.extensions.nl2br import Nl2BrExtension
+from markdown.extensions.sane_lists import SaneListExtension
+from markdown.extensions.smarty import SmartyExtension
+from markdown.extensions.wikilinks import WikiLinkExtension
+from markdown.extensions.admonition import AdmonitionExtension
+from markdown.extensions.attr_list import AttrListExtension
+from markdown.extensions.def_list import DefListExtension
+from markdown.extensions.footnotes import FootnoteExtension
+from markdown.extensions.meta import MetaExtension
+from markdown.extensions.abbr import AbbrExtension
+from markdown.extensions.legacy_em import LegacyEmExtension
+from markdown.extensions.md_in_html import MarkdownInHtmlExtension
 import docx
 import pptx
 
@@ -19,7 +34,22 @@ index_dir = os.path.join(script_dir, "data/index_dir")
 
 # 配置 Markdown 扩展
 markdown_extensions = [
+    TocExtension(),  # 支持目录
+    TableExtension(),  # 支持表格
+    FencedCodeExtension(),  # 支持代码块
+    CodeHiliteExtension(), # 代码高亮
     Nl2BrExtension(),  # 将一个回车视为换行
+    SaneListExtension(),  # 支持列表
+    SmartyExtension(),  # 支持智能符号
+    WikiLinkExtension(),  # 支持 Wiki 链接
+    AdmonitionExtension(),  # 支持提示框
+    AttrListExtension(),  # 支持属性列表
+    DefListExtension(),  # 支持定义列表
+    FootnoteExtension(),  # 支持脚注
+    MetaExtension(),  # 支持元数据
+    AbbrExtension(),  # 支持缩写
+    LegacyEmExtension(),  # 支持旧版强调
+    MarkdownInHtmlExtension(),  # 支持 HTML 中的 Markdown
 ]
 
 
