@@ -3,6 +3,7 @@ blinker==1.9.0
 bs4==0.0.2
 click==8.1.7
 Flask==3.1.0
+gunicorn==23.0.0
 importlib_metadata==8.5.0
 itsdangerous==2.2.0
 jieba==0.42.1
@@ -10,6 +11,7 @@ Jinja2==3.1.4
 lxml==5.3.0
 Markdown==3.7
 MarkupSafe==3.0.2
+packaging==24.2
 pillow==11.0.0
 python-docx==1.1.2
 python-pptx==1.0.2
