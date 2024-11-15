@@ -23,6 +23,5 @@ ENTRYPOINT ["sh", "-c"]
 CMD ["if [ ! -f /app/data/config.ini ]; then cp /app/init/config.ini /app/data/; fi && \
     if [ ! -d /app/data/index_dir ]; then cp -r /app/init/index_dir /app/data/; fi && \
     python indexer.py && \
-    python scheduler.py && \
-    cron && \
+    supervisord -c watcher.conf && \
     supervisord -c gunicorn.conf"]
