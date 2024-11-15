@@ -1,9 +1,6 @@
 # 使用基础镜像
 FROM python:3.9-slim
 
-# 安装 cron
-RUN apt-get update && apt-get install -y cron
-
 # 设置工作目录
 WORKDIR /app
 
@@ -23,5 +20,4 @@ ENTRYPOINT ["sh", "-c"]
 CMD ["if [ ! -f /app/data/config.ini ]; then cp /app/init/config.ini /app/data/; fi && \
     if [ ! -d /app/data/index_dir ]; then cp -r /app/init/index_dir /app/data/; fi && \
     python indexer.py && \
-    supervisord -c watcher.conf && \
-    supervisord -c gunicorn.conf"]
+    supervisord -c supervisord.conf"]
