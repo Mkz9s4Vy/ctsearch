@@ -1,4 +1,4 @@
 #!/bin/bash
 echo "Starting supervisord..."
-bin/supervisord -c conf/gunicorn.conf
+supervisord -c gunicorn.conf
 echo "Supervisord started."
