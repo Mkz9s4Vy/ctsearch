@@ -5,6 +5,7 @@ data/input
 data/logs.log 
 ## unencrypted sqlite database, will contains all data of personal files
 data/*.db
+data/index_dir
 
 
 
