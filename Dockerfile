@@ -10,17 +10,19 @@ COPY . /app
 # 安装依赖项
 RUN pip install --no-cache-dir -r requirements.txt
 
+# 检查并复制配置文件和索引目录
+RUN if [ ! -f /app/data/config.ini ]; then cp /app/init/config.ini /app/data/; fi
+RUN if [ ! -d /app/data/index_dir ]; then cp -r /app/init/index_dir /app/data/; fi
+RUN if [ ! -d /app/data/input ]; then cp -r /app/init/input /app/data/; fi
+
 # 运行一次 indexer.py
-RUN python indexer.py
+RUN bin/python indexer.py
+
 
 # 设置定时任务
 # RUN echo "*/5 * * * * /usr/local/bin/python /app/indexer.py" >> /etc/crontabs/root
 
-# 启动 Gunicorn
-CMD ["gunicorn", "--workers=4", "--bind=0.0.0.0:8000", "--config", "gunicorn_config.py", "wsgi:app"]
-
-# 将 data 目录映射到主机
-VOLUME /app/data
-
 # 暴露端口
 EXPOSE 8000
+
+CMD ["/app/entrypoint.sh"]
