@@ -22,7 +22,8 @@ from whoosh.index import create_in, open_dir, exists_in, create_in
 def read_config(config_file, script_dir):
     config = configparser.ConfigParser()
     config.read(config_file)
-    folders = [line.strip() for line in config['Folders']['folders'].splitlines() if line.strip()]
+    # 解析 folders 配置项
+    folders = [folder.strip() for folder in config['Folders']['folders'].split(',')]
     folders = [os.path.join(script_dir, 'data', folder) for folder in folders]
     return {
         'folders': folders,

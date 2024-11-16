@@ -6,35 +6,14 @@ import subprocess
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-# 自定义日志过滤器
-class InotifyEventFilter(logging.Filter):
-    def filter(self, record):
-        # 过滤掉包含 "in-event" 的日志消息
-        return "in-event" not in record.getMessage()
-
-# 设置日志
+# 设置日志记录
 def setup_logging(log_file):
-    if not os.path.exists(log_file):
-        os.makedirs(os.path.dirname(log_file), exist_ok=True)
-        with open(log_file, 'w') as f:
-            f.write('')  # 创建空日志文件
-
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-
-    # 文件日志处理器
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.addFilter(InotifyEventFilter())  # 添加过滤器
-    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    logger.addHandler(file_handler)
-
-    # 控制台日志处理器（可选）
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
-    console_handler.addFilter(InotifyEventFilter())  # 添加过滤器
-    console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    logger.addHandler(console_handler)
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        handlers=[
+                            logging.FileHandler(log_file),
+                            logging.StreamHandler()
+                        ])
 
 # 读取配置文件
 def read_config(config_file, script_dir):
@@ -45,10 +24,9 @@ def read_config(config_file, script_dir):
         logging.error("Configuration file is missing 'Folders' section.")
         return None
     
-    folders = [line.strip() for line in config['Folders']['folders'].splitlines() if line.strip()]
+    folders = [folder.strip() for folder in config['Folders']['folders'].split(',') if folder.strip()]
     folders = [os.path.join(script_dir, 'data', folder) for folder in folders]
     
-    # 过滤掉不存在的文件夹并记录警告
     valid_folders = []
     for folder in folders:
         if os.path.exists(folder):
@@ -80,23 +58,28 @@ class FileChangeHandler(FileSystemEventHandler):
         subprocess.run(["python", self.indexer_script])
         self.indexing = False
 
+    def start_indexer_for_new_folders(self, new_folders):
+        self.indexing = True
+        logging.info(f"Starting {self.indexer_script} for new folders...")
+        subprocess.run(["python", self.indexer_script])
+        self.indexing = False
+
 # 监控文件夹
-def monitor_folders(config_file, script_dir, delay, indexer_script):
-    folders = read_config(config_file, script_dir)
-    if not folders:
+def monitor_folders(delay, indexer_script, current_folders):
+    if not current_folders:
         logging.warning("No valid folders found. Exiting...")
         return None
-
+    
     event_handler = FileChangeHandler(delay, indexer_script)
     observer = Observer()
-    for folder in folders:
+    for folder in current_folders:
         observer.schedule(event_handler, folder, recursive=True)
     observer.start()
     return observer
 
 # 主函数
 def main():
-    global observer
+    global observer, current_folders
     script_dir = os.path.dirname(os.path.abspath(__file__))
     log_file = os.path.join(script_dir, 'data', 'watcher.log')
     setup_logging(log_file)
@@ -105,25 +88,44 @@ def main():
     indexer_script = os.path.join(script_dir, 'indexer.py')
     delay = 30  # 30秒延迟
     
-    observer = monitor_folders(config_file, script_dir, delay, indexer_script)
+    # 初始化现文件夹列表
+    current_folders = read_config(config_file, script_dir)
+    if not current_folders:
+        logging.warning("No valid folders found. Exiting...")
+        return
+    
+    # 触发初次索引
+    event_handler = FileChangeHandler(delay, indexer_script)
+    event_handler.start_indexer_for_new_folders(current_folders)
+
+    observer = monitor_folders(delay, indexer_script, current_folders)
     if not observer:
         return
 
     # 每隔60秒重新读取配置文件
     def reload_config():
-        global observer
+        global observer, current_folders
         while True:
             logging.info("Reloading configuration...")
             new_folders = read_config(config_file, script_dir)
             if new_folders:
-                # 停止当前的监控
-                observer.stop()
-                observer.join()
-                # 重新启动监控
-                observer = monitor_folders(config_file, script_dir, delay, indexer_script)
-                if not observer:
-                    logging.warning("Failed to reload configuration. Exiting...")
-                    return
+                # 对比新旧文件夹列表
+                added_folders = [folder for folder in new_folders if folder not in current_folders]
+                if added_folders:
+                    logging.info(f"New folders added: {added_folders}")
+                    # 停止当前的监控
+                    observer.stop()
+                    observer.join()
+                    # 更新现文件夹列表
+                    current_folders = new_folders
+                    # 触发初次索引
+                    event_handler = FileChangeHandler(delay, indexer_script)
+                    event_handler.start_indexer_for_new_folders(current_folders)
+                    # 重新启动监控
+                    observer = monitor_folders(delay, indexer_script, current_folders)
+                    if not observer:
+                        logging.warning("Failed to reload configuration. Exiting...")
+                        return
             threading.Event().wait(60)
 
     config_reload_thread = threading.Thread(target=reload_config)
