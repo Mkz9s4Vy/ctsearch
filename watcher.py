@@ -44,7 +44,39 @@ class FileChangeHandler(FileSystemEventHandler):
         self.timer = None
         self.indexing = False
 
-    def on_any_event(self, event):
+    # def on_any_event(self, event):
+    #     if self.indexing:
+    #         return
+    #     if self.timer:
+    #         self.timer.cancel()
+    #     self.timer = threading.Timer(self.delay, self.start_indexer)
+    #     self.timer.start()
+
+    def on_created(self, event):
+        if self.indexing:
+            return
+        if self.timer:
+            self.timer.cancel()
+        self.timer = threading.Timer(self.delay, self.start_indexer)
+        self.timer.start()
+
+    def on_deleted(self, event):
+        if self.indexing:
+            return
+        if self.timer:
+            self.timer.cancel()
+        self.timer = threading.Timer(self.delay, self.start_indexer)
+        self.timer.start()
+
+    def on_modified(self, event):
+        if self.indexing:
+            return
+        if self.timer:
+            self.timer.cancel()
+        self.timer = threading.Timer(self.delay, self.start_indexer)
+        self.timer.start()
+
+    def on_moved(self, event):
         if self.indexing:
             return
         if self.timer:
@@ -54,13 +86,12 @@ class FileChangeHandler(FileSystemEventHandler):
 
     def start_indexer(self):
         self.indexing = True
-        logging.info(f"Starting {self.indexer_script}...")
+        logging.info(f"Starting index for changes detected {self.indexer_script}")
         subprocess.run(["python", self.indexer_script])
         self.indexing = False
 
     def start_indexer_for_new_folders(self, new_folders):
         self.indexing = True
-        logging.info(f"Starting {self.indexer_script} for new folders...")
         subprocess.run(["python", self.indexer_script])
         self.indexing = False
 
@@ -97,6 +128,7 @@ def main():
     # 触发初次索引
     event_handler = FileChangeHandler(delay, indexer_script)
     event_handler.start_indexer_for_new_folders(current_folders)
+    logging.info(f"Start index for first time ...... {current_folders}")
 
     observer = monitor_folders(delay, indexer_script, current_folders)
     if not observer:
@@ -118,9 +150,10 @@ def main():
                     observer.join()
                     # 更新现文件夹列表
                     current_folders = new_folders
-                    # 触发初次索引
+                    # 触发索引
                     event_handler = FileChangeHandler(delay, indexer_script)
                     event_handler.start_indexer_for_new_folders(current_folders)
+                    logging.info(f"Start index for current folders changes ...... {current_folders}")                    
                     # 重新启动监控
                     observer = monitor_folders(delay, indexer_script, current_folders)
                     if not observer:
