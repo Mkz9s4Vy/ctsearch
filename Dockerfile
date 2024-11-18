@@ -19,4 +19,5 @@ ENTRYPOINT ["sh", "-c"]
 # 在容器启动时执行文件检查和复制操作，然后运行 indexer.py，最后运行 supervisord
 CMD ["if [ ! -f /app/data/config.ini ]; then cp /app/init/config.ini /app/data/; fi && \
     if [ ! -d /app/data/index_dir ]; then cp -r /app/init/index_dir /app/data/; fi && \
+    if [ ! -d /app/data/input ]; then cp -r /app/init/input /app/data/; fi && \
     supervisord -c supervisord.conf"]
