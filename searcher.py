@@ -3,7 +3,6 @@ from whoosh.index import open_dir
 from whoosh.qparser import QueryParser
 import atexit
 from flask import Flask, request, render_template, render_template_string, redirect, url_for, jsonify
-import os
 import markdown
 from markdown.extensions.toc import TocExtension
 from markdown.extensions.tables import TableExtension
@@ -23,7 +22,8 @@ from markdown.extensions.legacy_em import LegacyEmExtension
 from markdown.extensions.md_in_html import MarkdownInHtmlExtension
 import docx
 import pptx
-
+from bs4 import BeautifulSoup
+import re
 
 
 # 脚本所在目录
@@ -115,6 +115,7 @@ def search():
 @app.route('/render_file')
 def render_file():
     file_path = request.args.get('path')
+    query_str = request.args.get('query')  # 获取搜索关键词
     if not file_path or not os.path.exists(file_path):
         return "File not found", 404
     
@@ -126,6 +127,20 @@ def render_file():
         if file_extension == '.md':
             # 渲染 Markdown 文件
             rendered_content = markdown.markdown(content, extensions=markdown_extensions)
+            
+            # 高亮搜索关键词
+            if query_str:
+                soup = BeautifulSoup(rendered_content, 'html.parser')
+                pattern = re.compile(re.escape(query_str), re.IGNORECASE)
+                
+                # 遍历所有文本节点并高亮关键词
+                for text_node in soup.find_all(text=True):
+                    if text_node.parent.name not in ['script', 'style', 'code']:  # 避免处理脚本和样式
+                        highlighted_text = pattern.sub(f'<span style="background-color: yellow;">{query_str}</span>', text_node)
+                        text_node.replace_with(BeautifulSoup(highlighted_text, 'html.parser'))
+                
+                rendered_content = str(soup)
+            
             # 使用 render_template_string 函数来渲染包含 Jinja2 语法的字符串
             custom_css_link = '<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'markdown_styles.css\') }}">'
             rendered_content = render_template_string(f"{custom_css_link}<div>{rendered_content}</div>", url_for=url_for)

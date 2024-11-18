@@ -181,38 +181,38 @@
 
     </style>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // 获取所有文件项
-            const fileItems = document.querySelectorAll('.left-column li');
-            const fileContentContainer = document.getElementById('file-content');
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取所有文件项
+        const fileItems = document.querySelectorAll('.left-column li');
+        const fileContentContainer = document.getElementById('file-content');
 
-            // 为每个文件项添加点击事件
-            fileItems.forEach(item => {
-                item.addEventListener('click', function () {
-                    const folderPath = this.querySelector('p:nth-child(2)').innerText.split(': ')[1];
-                    const fileName = this.querySelector('p:nth-child(1)').innerText;
-                    const filePath = folderPath + '/' + fileName;
-                    loadFileContent(filePath);
-                });
+        // 为每个文件项添加点击事件
+        fileItems.forEach(item => {
+            item.addEventListener('click', function () {
+                const folderPath = this.querySelector('p:nth-child(2)').innerText.split(': ')[1];
+                const fileName = this.querySelector('p:nth-child(1)').innerText;
+                const filePath = folderPath + '/' + fileName;
+                const query = "{{ query }}";  // 获取搜索关键词
+                loadFileContent(filePath, query);
             });
-
-            // 添加按钮点击事件监听器
-            document.getElementById('clear-content').addEventListener('click', clearContent);
-            // 清除文件内容显示的函数
-            function clearContent() {
-                var iframe = document.getElementById('rendered-content');
-                iframe.src = 'about:blank'; // 将 iframe 的 src 设置为空白页面
-            }
-
-
-            // 预览文件内容函数
-            function loadFileContent(filePath) {
-                var iframe = document.getElementById('rendered-content');
-                iframe.src = '/render_file?path=' + encodeURIComponent(filePath);
-            }
         });
-    </script>
+
+        // 添加按钮点击事件监听器
+        document.getElementById('clear-content').addEventListener('click', clearContent);
+        // 清除文件内容显示的函数
+        function clearContent() {
+            var iframe = document.getElementById('rendered-content');
+            iframe.src = 'about:blank'; // 将 iframe 的 src 设置为空白页面
+        }
+
+        // 预览文件内容函数
+        function loadFileContent(filePath, query) {
+            var iframe = document.getElementById('rendered-content');
+            iframe.src = '/render_file?path=' + encodeURIComponent(filePath) + '&query=' + encodeURIComponent(query);
+        }
+    });
+</script>
 
 
 </head>
