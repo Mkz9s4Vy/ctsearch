@@ -1,4 +1,4 @@
-name: Sync and Build Hexo
+name: Build image ctsearch
 
 on:
   workflow_dispatch:  # manually
