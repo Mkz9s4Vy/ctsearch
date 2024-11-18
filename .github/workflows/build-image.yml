@@ -4,7 +4,7 @@ on:
   workflow_dispatch:  # manually
 
 jobs:
-  uild:
+  build:
     runs-on: ubuntu-latest
 
     # Checkout repository
@@ -12,16 +12,9 @@ jobs:
     - name: Checkout current repository
       uses: actions/checkout@v4
 
-    # Docker Image
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-      
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
     # Login Ghcr
     - name: 'Login to GitHub Container Registry'
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{github.actor}}
@@ -31,7 +24,7 @@ jobs:
     - name: Set Version
       id: set-version
       run: |
-        echo "version=`date +'%y-%m-%d'`" >> $GITHUB_ENV
+        echo "version=ver$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
    # Build and push to ghcr
     - name: Build and push to ghcr
