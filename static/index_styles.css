@@ -1,0 +1,71 @@
+body {
+    background-color: #2d2e2f;
+}
+
+.centered-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh; /* 使表单占据整个视口高度 */
+}
+
+.logo {
+    width: 600px; /* 限制宽度 */
+    height: auto; /* 保持宽高比 */
+    margin-bottom: 10px;
+}
+
+.search-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 600px;
+    height: 50px;
+    padding: 10px 30px 10px 30px;
+    margin: 5px;
+}
+
+form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.search-input {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    border: none;
+    border-radius: 64px;
+    background-color: #e0e0e0;
+    color: #000000;
+    text-align: left;
+    text-decoration: none;
+    cursor: text;
+    padding: 0 32px 0 32px;
+    margin: 0;
+}
+
+/* 媒体查询：当页面宽度小于1000px时，调整元素大小 */
+@media (max-width: 1000px) {
+    .centered-form {
+        height: 80vh; /* 自动调整高度 */
+    }
+
+    .logo {
+        width: 80%; /* 缩小logo宽度 */
+    }
+
+    .search-container {
+        width: 80%; /* 缩小搜索容器宽度 */
+        padding: 10px 20px 10px 20px; /* 调整内边距 */
+    }
+
+    .search-input {
+        font-size: 16px; /* 缩小输入框字体大小 */
+        padding: 0 24px 0 24px; /* 调整内边距 */
+    }
+}

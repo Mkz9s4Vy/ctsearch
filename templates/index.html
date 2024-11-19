@@ -5,60 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Search</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+        <!-- 引入样式表文件 -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='index_styles.css') }}">
     <style>
-        body{
-            background-color: #2d2e2f;
-        }
-        .centered-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 80vh; /* 使表单占据整个视口高度 */
-        }
         
-        .logo {
-            width: 600px; /* 限制宽度 */
-            height: auto; /* 保持宽高比 */
-            margin-bottom: 10px;
-        }
-
-        .search-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 600px;
-            height: 50px;
-            padding: 10px 30px 10px 30px;
-            margin: 5px;
-        }
-
-        form {
-            width: 100%;
-            height: 100%;
-            display: flex;
-        }
-
-        .search-input {
-            display: inline-block;
-            width: 100%;
-            height: 100%;
-            font-size: 18px;
-            border: none;
-            border-radius: 64px;
-            background-color: #e0e0e0;
-            color: #000000;
-            text-align: left;
-            text-decoration: none;
-            cursor: text;
-            padding: 0 32px 0 32px;
-            margin: 0;
-        }
-        /* .search-input::placeholder {
-            text-align: center;
-        } */
-
     </style>
 </head>
 <body>
