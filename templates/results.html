@@ -23,6 +23,7 @@
             const fileItems = document.querySelectorAll('#left-column li');
             const fileContentContainer = document.getElementById('file-content');
             const container = document.querySelector('.container');
+            const toggleLeftColumnBtn = document.getElementById('toggle-left-column-btn');
 
             fileItems.forEach(item => {
                 item.addEventListener('click', function () {
@@ -72,14 +73,23 @@
             function handleSwipe() {
                 const swipeDistance = touchEndX - touchStartX;
                 // console.log('Swipe Distance:', swipeDistance);
-                if (swipeDistance > 50) {
+                if (swipeDistance > 30) {
                     // Swipe right, show the list
                     leftColumn.classList.remove('hidden');
-                } else if (swipeDistance < -50) {
+                } else if (swipeDistance < -30) {
                     // Swipe left, hide the list
                     leftColumn.classList.add('hidden');
                 }
             }
+
+            // 新增按钮点击事件
+            toggleLeftColumnBtn.addEventListener('click', function () {
+                if (leftColumn.classList.contains('hidden')) {
+                    leftColumn.classList.remove('hidden');
+                } else {
+                    leftColumn.classList.add('hidden');
+                }
+            })
         });
     </script>
 </head>
@@ -95,7 +105,7 @@
                         </div>
                         <div id="left-top-logo">
                             <input type="image" id="left-top-logo-img"
-                                src="{{ url_for('static', filename='search-btn.svg') }}" alt="Logo">
+                                src="{{ url_for('static', filename='search-btn.png') }}" alt="Logo">
                         </div>
                     </form>
                 </div>
@@ -117,6 +127,7 @@
                     <li title="点击预览文件内容">
                         <p id="file-name">{{ result.file_name }}</p>
                         <p id="folder-path">路径: {{ result.folder_path }}</p>
+                        <p id="folder-name">目录: {{ result.folder_name }}</p>
                     </li>
                     {% endfor %}
                 </ul>
@@ -127,6 +138,17 @@
 
 
             <div id="left-bottom">
+                
+                <div id="left-bottom-search">
+                    <form id="left-bottom-search-form" action="/search" method="get">
+                        <div id="left-bottom-input-container">
+                            <input type="text" id="left-bottom-search-input" name="q" placeholder="输入搜索内容">
+                        </div>
+                    </form>
+                </div>
+
+
+
                 <div id="left-bottom-back-home">
                     <form id="left-bottom-back-home-form" action="/">
                         <button id="left-bottom-back-home-btn">Back Home</button>
@@ -145,6 +167,12 @@
             <iframe id="rendered-content" src="{{ url_for('iframe_default') }}"></iframe>
         </div>
     </div>
+
+    <!-- 新增按钮 -->
+    <button id="toggle-left-column-btn">list</button>
+
+
+
 </body>
 
 </html>

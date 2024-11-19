@@ -89,7 +89,7 @@ body {
 #left-top-search-input {
     display: inline-block;
     width: 95%;
-    height: 60%;
+    height: 95%;
     padding: 0;
     margin: 0;
     border: solid;
@@ -111,7 +111,7 @@ body {
 #left-top-results-title {
     height: 50%;
     font-size: 18px;
-    padding-top: 10px;
+    /* padding-top: 10px; */
 }
 
 #left-top-results-comment {
@@ -140,6 +140,43 @@ body {
     display: flex;
     justify-content: space-between;
 }
+
+
+#left-bottom-search {
+    display: none;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+}
+
+#left-bottom-search-form {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#left-bottom-input-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#left-bottom-search-input {
+    display: inline-block;
+    width: 95%;
+    height: 95%;
+    padding: 0;
+    margin: 0;
+    border: solid;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    color: #000000;
+    text-align: center;
+    cursor: text;
+}
+
 
 #left-bottom-back-home {
     height: 100%;
@@ -215,8 +252,13 @@ p {
     margin-bottom: 15px;
 }
 
+#folder-name {
+    font-size: 14px;
+}
+
 #folder-path {
     font-size: 14px;
+    display: none;
 }
 
 
@@ -230,6 +272,35 @@ p {
     transform: translateX(-100%);
 }
 
+
+#toggle-left-column-btn {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    z-index: 1001;
+    /* 确保按钮在最上方 */
+    background-color: #2a7e9e;
+    color: white;
+    border: none;
+    width: 40px;
+    /* 圆形的直径 */
+    height: 40px;
+    /* 圆形的直径 */
+    border-radius: 50%;
+    /* 使按钮变成圆形 */
+    cursor: pointer;
+    display: none;
+    /* 默认隐藏 */
+    text-align: center;
+    line-height: 40px;
+    /* 使文字垂直居中 */
+    font-size: 18px;
+    /* 调整文字大小 */
+}
+
+
+
+
 @media (max-width: 1000px) {
     #left-column {
         width: 80%;
@@ -242,17 +313,44 @@ p {
         height: 10%;
     }
 
+    #left-top-search {
+        display: none;
+    }
+
+    #left-top-results-title {
+        height: 80%;
+        display: flex;
+        align-items: center;
+    }
+
     #left-middle {
         height: 85%;
         overflow-y: auto;
     }
 
     #left-bottom {
-        height: 5%;
+        height: 3%;
+    }
+
+    #left-bottom-search {
+        display: flex;
+    }
+
+    #left-bottom-back-home {
+        display: none;
+    }
+
+    #left-bottom-btn-container {
+        display: none;
     }
 
     .hidden {
         transform: translateX(-100%);
+    }
+
+    #toggle-left-column-btn {
+        display: block;
+        /* 页面宽度小于1000时显示 */
     }
 }
 
@@ -263,6 +361,10 @@ p {
         position: relative;
         transform: none;
     }
+
+
+
+
 
     .hidden {
         transform: none;

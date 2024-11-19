@@ -7,6 +7,7 @@ body {
 	font-family: Helvetica, Arial, "PingFang SC", "Microsoft YaHei", "WenQuanYi Micro Hei", "tohoma,sans-serif";
 	margin: 0;
 	padding: 10%;
+	text-align: justify;
 }
 h1 {
 	font-size: 2.2em;
@@ -127,9 +128,9 @@ em, dfn {
 del {
 	text-decoration: line-through;
 }
-/*code {font-size:90%;}*/
+/* code {font-size:90%;} */
 
-/*pre {text-align:left; overflow-x: scroll; color: #257fa0; background: #f6f6f6; padding: 10pt 15pt; border-radius: 3px; border: solid 1px #e2e2e2;}*/
+pre {text-align:left; overflow-x: scroll; color: #257fa0; background: #f6f6f6; padding: 10pt 15pt; border-radius: 3px; border: solid 1px #e2e2e2;}
 
 pre {
 	margin: 0 0 10px;

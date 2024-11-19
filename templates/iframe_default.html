@@ -7,7 +7,7 @@
     <title>iframe default</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <!-- 引入样式表文件 -->
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='results_styles.css') }}"> -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='index_styles.css') }}">
 
     <style>
         
@@ -40,8 +40,8 @@
 </head>
 
 <body>
-    <div class="container">
-        no file selected
+    <div class="centered-form">
+        <img class="logo" src="{{ url_for('static', filename='no-file.png') }}" alt="Logo">
     </div>
 </body>
 

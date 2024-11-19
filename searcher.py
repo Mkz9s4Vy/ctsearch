@@ -101,11 +101,13 @@ def search_index(query_str):
                     file_path = hit['file_path']
                     file_name = hit['file_name']
                     folder_path = os.path.dirname(file_path)
+                    folder_name = os.path.basename(folder_path)
                     score = hit.score  # Assuming Whoosh provides a score
                     results.append({
                         "file_name": file_name,
                         "file_path": file_path,
                         "folder_path": folder_path,
+                        "folder_name": folder_name,
                         "score": score
                     })
     except Exception as e:
@@ -135,8 +137,7 @@ def search():
         # return jsonify(results)
         return render_template('results.html', query=query_str, results=results)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-        # return render_template('error.html', message='No query provided')
+        return redirect(url_for('index')) , 500
 
 # 定义iframe默认页面路由
 @app.route('/iframe_default')
@@ -148,7 +149,7 @@ def render_file():
     file_path = request.args.get('path')
     query_str = request.args.get('query')  # 获取搜索关键词
     if not file_path or not os.path.exists(file_path):
-        return "File not found", 404
+        return render_template('iframe_default.html'), 404
     
     try:
         file_extension = os.path.splitext(file_path)[1]
@@ -232,7 +233,7 @@ def render_file():
         
         return rendered_content
     except Exception as e:
-        return f"Error rendering file: {str(e)}", 500
+        return render_template('index.html'), 404
 
 
 
