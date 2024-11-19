@@ -7,239 +7,110 @@
     <title>Search Results</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <!-- 引入样式表文件 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='results_styles.css') }}">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .container {
-            display: flex;
-            flex: 1;
-            border: 5px solid #ddd;
-            /* 最左和最右的边框 */
-            margin: 0 10px;
-            /* 最左和最右的边框 */
-        }
-
-        .left-column {
-            width: 30%;
-            background-color: #e0e0e0;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .separator {
-            width: 20px;
-            /* 中间分隔区域 */
-            background-color: #ccc;
-        }
-
-        .right-column {
-            flex: 1;
-            /* 剩下的部分全部由右边区域占用 */
-            background-color: #fff;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            /* margin: 0 10px 10px 10px; */
-        }
-
-        .search-container {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 600px;
-            height: 50px;
-            margin-top: 20px;
-        }
-
-        #input-container{
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-left: 5px;
-        }
-
-        form {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        #logo-container{
-            height: 50px;
-        }
-
-        .search-input {
-            display: inline-block;
-            width: 90%;
-            height: 60%;
-            padding: 0;
-            margin: 0;
-            border:solid;
-            border-radius: 5px;
-            background-color: #e0e0e0;
-            color: #000000;
-            text-align: center;
-            cursor: text;
-        }
-
-        #logo-container{
-            height: 50px;
-        }
-
-        #search-logo{
-            height: 100%;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 5px;
-            margin: 5px;
-            border: solid;
-            border-radius: 5px;
-            background-color: #e0e0e0;
-            color: #000000;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .button:hover {
-            background-color: #cccccc;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        li {
-            background-color: #fff;
-            margin: 10px 0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            /* 改变鼠标指针为手型 */
-        }
-
-        p {
-            margin: 5px 0;
-        }
-
-        #file-name {
-            margin-bottom: 15px;
-        }
-
-        #folder-path {
-            font-size: 14px;
-        }
-
-        #file-content {
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-        }
-
-        #rendered-content {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        #results{
-            margin-top: 30px;
-        }
-
-        #results-title{
-            margin: 5px;
-        }
-
-        #results-comment{
-            font-size: 16px;
-            color: #000;
-            margin-right: 0.5em;
-        }
-
-        #results-query{
-            font-size: 20px;
-        }
-
-
     </style>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 获取所有文件项
-        const fileItems = document.querySelectorAll('.left-column li');
-        const fileContentContainer = document.getElementById('file-content');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const leftColumn = document.querySelector('#left-column');
+            if (!leftColumn) {
+                console.error('Element #left-column not found');
+                return;
+            }
 
-        // 为每个文件项添加点击事件
-        fileItems.forEach(item => {
-            item.addEventListener('click', function () {
-                const folderPath = this.querySelector('p:nth-child(2)').innerText.split(': ')[1];
-                const fileName = this.querySelector('p:nth-child(1)').innerText;
-                const filePath = folderPath + '/' + fileName;
-                const query = "{{ query }}";  // 获取搜索关键词
-                loadFileContent(filePath, query);
+            const fileItems = document.querySelectorAll('#left-column li');
+            const fileContentContainer = document.getElementById('file-content');
+            const container = document.querySelector('.container');
+
+            fileItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    const folderPath = this.querySelector('p:nth-child(2)').innerText.split(': ')[1];
+                    const fileName = this.querySelector('p:nth-child(1)').innerText;
+                    const filePath = folderPath + '/' + fileName;
+                    const query = "{{ query }}";
+                    loadFileContent(filePath, query);
+                    if (window.innerWidth < 1000) {
+                        leftColumn.classList.add('hidden');
+                    }
+                });
             });
+
+            document.getElementById('left-bottom-clear-btn').addEventListener('click', clearContent);
+
+            function clearContent() {
+                var iframe = document.getElementById('rendered-content');
+                // iframe.src = 'about:blank';
+            }
+
+            function loadFileContent(filePath, query) {
+                var iframe = document.getElementById('rendered-content');
+                iframe.src = '/render_file?path=' + encodeURIComponent(filePath) + '&query=' + encodeURIComponent(query);
+            }
+
+            window.addEventListener('message', function (event) {
+                if (event.data === 'showList') {
+                    leftColumn.classList.remove('hidden');
+                } else if (event.data === 'hideList') {
+                    leftColumn.classList.add('hidden');
+                }
+            });
+
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.body.addEventListener('touchstart', function (event) {
+                touchStartX = event.changedTouches[0].screenX;
+            });
+
+            document.body.addEventListener('touchend', function (event) {
+                touchEndX = event.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeDistance = touchEndX - touchStartX;
+                // console.log('Swipe Distance:', swipeDistance);
+                if (swipeDistance > 50) {
+                    // Swipe right, show the list
+                    leftColumn.classList.remove('hidden');
+                } else if (swipeDistance < -50) {
+                    // Swipe left, hide the list
+                    leftColumn.classList.add('hidden');
+                }
+            }
         });
-
-        // 添加按钮点击事件监听器
-        document.getElementById('clear-content').addEventListener('click', clearContent);
-        // 清除文件内容显示的函数
-        function clearContent() {
-            var iframe = document.getElementById('rendered-content');
-            iframe.src = 'about:blank'; // 将 iframe 的 src 设置为空白页面
-        }
-
-        // 预览文件内容函数
-        function loadFileContent(filePath, query) {
-            var iframe = document.getElementById('rendered-content');
-            iframe.src = '/render_file?path=' + encodeURIComponent(filePath) + '&query=' + encodeURIComponent(query);
-        }
-    });
-</script>
-
-
+    </script>
 </head>
 
 <body>
     <div class="container">
-        <div class="left-column">
-            <!-- 左边内容 -->
+        <div id="left-column">
+            <div id="left-top">
+                <div id="left-top-search">
+                    <form id="left-top-search-form" action="/search" method="get">
+                        <div id="left-top-input-container">
+                            <input type="text" id="left-top-search-input" name="q" placeholder="输入搜索内容">
+                        </div>
+                        <div id="left-top-logo">
+                            <input type="image" id="left-top-logo-img"
+                                src="{{ url_for('static', filename='search-btn.svg') }}" alt="Logo">
+                        </div>
+                    </form>
+                </div>
 
-            <div class="search-container">
-                <form action="/search" method="get">
-                    <div id="input-container">
-                        <input type="text" class="search-input" name="q" placeholder="输入搜索内容">
-                    </div>
-                    <div id="logo-container">
-                        <input type="image" id="search-logo" src="{{ url_for('static', filename='logo-font-white.svg') }}" alt="Logo">
-                    </div>
-                    <!-- <button type="submit" class="button">Search</button> -->
-                </form>
-            </div>
-            <div id="results">
-                <div id="results-title">
+                <div id="left-top-results-title">
                     <p>
-                        <span id="results-comment">Search Results for</span>
-                        <span id="results-query">"{{ query }}"</span>
+                        <span id="left-top-results-comment">Search Results for</span>
+                        <span id="left-top-results-query">"{{ query }}"</span>
                     </p>
                 </div>
+            </div>
+
+
+            <div id="left-middle">
+
                 {% if results %}
                 <ul>
                     {% for result in results %}
@@ -247,27 +118,32 @@
                         <p id="file-name">{{ result.file_name }}</p>
                         <p id="folder-path">路径: {{ result.folder_path }}</p>
                     </li>
-                    <div>
-                        <!-- <button></button> -->
-                    </div>
                     {% endfor %}
                 </ul>
                 {% else %}
                 <p>No results found.</p>
                 {% endif %}
             </div>
-            <div class="button-container">
-                <a href="/"><button class="button">Back to Search</button></a>
-                <button id="clear-content" class="button">Clear Preview</button>
+
+
+            <div id="left-bottom">
+                <div id="left-bottom-back-home">
+                    <form id="left-bottom-back-home-form" action="/">
+                        <button id="left-bottom-back-home-btn">Back Home</button>
+                    </form>
+                </div>
+                <div id="left-bottom-separator"></div>
+                <div id="left-bottom-btn-container">
+                    <button id="left-bottom-clear-btn">Clear Preview</button>
+                </div>
             </div>
         </div>
-        <div class="separator"></div>
-        <!-- 分割条 -->
-        <!-- 分割条 -->
-        <div id="file-content">
-            <iframe id="rendered-content"></iframe>
-        </div>
 
+        <div id="middle-separator"></div>
+
+        <div id="file-content">
+            <iframe id="rendered-content" src="{{ url_for('iframe_default') }}"></iframe>
+        </div>
     </div>
 </body>
 

@@ -1,0 +1,281 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    position: relative;
+}
+
+.right-column {
+    flex: 1;
+    background-color: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+#file-content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+#rendered-content {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+
+#middle-separator {
+    display: none;
+    width: 20px;
+    background-color: #ccc;
+}
+
+#left-column {
+    background-color: #e0e0e0;
+    padding: 10px 5px 10px 10px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1000;
+}
+
+/* start left-top css*/
+#left-top {
+    height: 10%;
+}
+
+#left-top-search {
+    display: flex;
+    justify-content: space-between;
+    max-width: 600px;
+    width: 100%;
+    height: 50%;
+}
+
+#left-top-search-form {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#left-top-input-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#left-top-search-input {
+    display: inline-block;
+    width: 95%;
+    height: 60%;
+    padding: 0;
+    margin: 0;
+    border: solid;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    color: #000000;
+    text-align: center;
+    cursor: text;
+}
+
+#left-top-logo {
+    height: 100%;
+}
+
+#left-top-logo-img {
+    height: 100%;
+}
+
+#left-top-results-title {
+    height: 50%;
+    font-size: 18px;
+    padding-top: 10px;
+}
+
+#left-top-results-comment {
+    font-size: 16px;
+    color: #000;
+    padding-right: 0.5em;
+}
+
+#left-top-results-query {
+    font-size: 20px;
+}
+
+/* end left-top css*/
+
+/* start left-middle css*/
+#left-middle {
+    height: 85%;
+    overflow-y: auto;
+}
+
+/* end left-middle css*/
+
+/* start left-bottom css*/
+#left-bottom {
+    height: 5%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#left-bottom-back-home {
+    height: 100%;
+    width: 30%;
+}
+
+#left-bottom-back-home-form {
+    height: 75%;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#left-bottom-back-home-btn {
+    height: 100%;
+    width: 100%;
+    border: solid;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    padding-block: 0;
+    padding-inline: 0;
+}
+
+#left-bottom-separator {
+    width: 0%;
+    display: none;
+}
+
+#left-bottom-btn-container {
+    height: 100%;
+    width: 30%;
+}
+
+#left-bottom-clear-btn {
+    height: 75%;
+    width: 100%;
+    margin-top: 10px;
+    border: solid;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    padding-block: 0;
+    padding-inline: 0;
+}
+
+/* end left-bottom css*/
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+p {
+    margin: 5px 0;
+}
+
+#file-name {
+    margin-bottom: 15px;
+}
+
+#folder-path {
+    font-size: 14px;
+}
+
+
+#rendered-content {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.hidden {
+    transform: translateX(-100%);
+}
+
+@media (max-width: 1000px) {
+    #left-column {
+        width: 80%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #left-top {
+        height: 10%;
+    }
+
+    #left-middle {
+        height: 85%;
+        overflow-y: auto;
+    }
+
+    #left-bottom {
+        height: 5%;
+    }
+
+    .hidden {
+        transform: translateX(-100%);
+    }
+}
+
+@media (min-width: 1001px) {
+    #left-column {
+        width: 30%;
+        /* 设置左侧栏的宽度 */
+        position: relative;
+        transform: none;
+    }
+
+    .hidden {
+        transform: none;
+    }
+
+    .container {
+        flex-direction: row;
+        /* 并列显示 */
+    }
+
+    #file-content {
+        position: relative;
+        width: 70%;
+        /* 设置右侧内容的宽度 */
+    }
+}

@@ -31,6 +31,11 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 # 定义 Whoosh 索引存储的目录
 index_dir = os.path.join(script_dir, "data/index_dir")
 
+# 定义了一个搜索函数，"dir:xxx"，不使用 jieba 分词的索引结果进行搜索
+# 当使用 "dir:xxx" 搜索时，默认给 "xxx" 加上BASE_DIR，以列出该目录下的全部文件，
+BASE_DIR = os.path.join(script_dir, "data")
+
+
 
 # 配置 Markdown 扩展
 markdown_extensions = [
@@ -66,27 +71,48 @@ def close_index():
 
 atexit.register(close_index)
 
-# 搜索索引的函数
+
+
 def search_index(query_str):
     results = []
     try:
-        with ix.searcher() as searcher:
-            parser = QueryParser("file_content", ix.schema)
-            query = parser.parse(query_str)
-            for hit in searcher.search(query):
-                file_path = hit['file_path']
-                file_name = hit['file_name']
-                folder_path = os.path.dirname(file_path)
-                score = hit.score  # Assuming Whoosh provides a score
-                results.append({
-                    "file_name": file_name,
-                    "file_path": file_path,
-                    "folder_path": folder_path,
-                    "score": score
-                })
+        if query_str.startswith('dir:'):
+            # 提取目录路径
+            dir_name = query_str[4:].strip()
+            dir_path = os.path.join(BASE_DIR, dir_name)
+            if os.path.isdir(dir_path):
+                for root, _, files in os.walk(dir_path):
+                    for file_name in files:
+                        file_path = os.path.join(root, file_name)
+                        folder_path = os.path.dirname(file_path)
+                        results.append({
+                            "file_name": file_name,
+                            "file_path": file_path,
+                            "folder_path": folder_path,
+                            "score": 1  # 假设所有文件的得分相同
+                        })
+            else:
+                print(f"Directory not found: {dir_path}")
+        else:
+            with ix.searcher() as searcher:
+                parser = QueryParser("file_content", ix.schema)
+                query = parser.parse(query_str)
+                for hit in searcher.search(query):
+                    file_path = hit['file_path']
+                    file_name = hit['file_name']
+                    folder_path = os.path.dirname(file_path)
+                    score = hit.score  # Assuming Whoosh provides a score
+                    results.append({
+                        "file_name": file_name,
+                        "file_path": file_path,
+                        "folder_path": folder_path,
+                        "score": score
+                    })
     except Exception as e:
         print(f"Error during search: {e}")
     return results
+
+
 
 
 app = Flask(__name__)
@@ -111,6 +137,11 @@ def search():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
         # return render_template('error.html', message='No query provided')
+
+# 定义iframe默认页面路由
+@app.route('/iframe_default')
+def iframe_default():
+    return render_template('iframe_default.html')
 
 @app.route('/render_file')
 def render_file():
@@ -144,9 +175,11 @@ def render_file():
             # 使用 render_template_string 函数来渲染包含 Jinja2 语法的字符串
             custom_css_link = '<link rel="stylesheet" href="{{ url_for(\'static\', filename=\'markdown_styles.css\') }}">'
             rendered_content = render_template_string(f"{custom_css_link}<div>{rendered_content}</div>", url_for=url_for)
+        
         elif file_extension == '.html':
             # 直接返回 HTML 文件内容
             rendered_content = content
+        
         elif file_extension == '.docx':
             # 渲染 DOCX 文件
             doc = docx.Document(file_path)
@@ -154,6 +187,7 @@ def render_file():
             for para in doc.paragraphs:
                 rendered_content += "<p>{}</p>".format(para.text)
             rendered_content += "</body></html>"
+        
         elif file_extension == '.pptx':
             # 渲染 PPT 文件
             prs = pptx.Presentation(file_path)
@@ -163,13 +197,43 @@ def render_file():
                     if hasattr(shape, "text"):
                         rendered_content += "<p>{}</p>".format(shape.text)
             rendered_content += "</body></html>"
+        
         else:
             # 其他文件类型，直接返回文本内容
             rendered_content = f"<html><body><pre>{content}</pre></body></html>"
         
+        # 添加滑动事件监测和 postMessage 传递
+        rendered_content += """
+        <script>
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            document.addEventListener('touchstart', function (event) {
+                touchStartX = event.changedTouches[0].screenX;
+            });
+
+            document.addEventListener('touchend', function (event) {
+                touchEndX = event.changedTouches[0].screenX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeDistance = touchEndX - touchStartX;
+                if (swipeDistance > 50) {
+                    // Swipe right, show the list
+                    window.parent.postMessage('showList', '*');
+                } else if (swipeDistance < -50) {
+                    // Swipe left, hide the list
+                    window.parent.postMessage('hideList', '*');
+                }
+            }
+        </script>
+        """
+        
         return rendered_content
     except Exception as e:
         return f"Error rendering file: {str(e)}", 500
+
 
 
 

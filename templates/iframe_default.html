@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iframe default</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <!-- 引入样式表文件 -->
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='results_styles.css') }}"> -->
+
+    <style>
+        
+    </style>
+
+    <script>
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function (event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function (event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeDistance = touchEndX - touchStartX;
+            if (swipeDistance > 50) {
+                // Swipe right, show the list
+                window.parent.postMessage('showList', '*');
+            } else if (swipeDistance < -50) {
+                // Swipe left, hide the list
+                window.parent.postMessage('hideList', '*');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        no file selected
+    </div>
+</body>
+
+</html>
