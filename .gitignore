@@ -1,12 +1,5 @@
-# Private data that must be ignored
-## personal files input dir
-data/input
-## running logs, will contains personal file names
-data/logs.log 
-## unencrypted sqlite database, will contains all data of personal files
-data/*.db
-data/index_dir
-
+# personal data
+data/
 
 
 
