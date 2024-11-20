@@ -1,0 +1,14 @@
+# data/webdav_config.yaml
+host: "0.0.0.0"
+port: 8192
+provider_mapping:
+  "/": "data/singlefile"
+simple_dc:
+  user_mapping:
+    "/":
+      "username":
+        password: "your_password"
+
+
+
+
