@@ -116,6 +116,10 @@ def insert_file_attributes_to_db(conn, attributes):
 # 对比和更新数据库
 def compare_and_update_db(conn):
     cursor = conn.cursor()
+    # 数据库增删改计数器，有增删改操作就增加计数，有计数就必须重建数据库
+    db_op_count = 0
+    # 是否重建数据库的信号，用于传递给其他函数，判断是否重建数据库
+    reindex_needed = False
 
     # 获取chkchng表和indexed表的数据
     cursor.execute("SELECT file_path, modification_time FROM chkchng")
@@ -126,36 +130,60 @@ def compare_and_update_db(conn):
     chkchng_dict = {item[0]: item[1] for item in chkchng_data}
     indexed_dict = {item[0]: item[1] for item in indexed_data}
 
-    # 删除indexed表中不存在于chkchng表的数据
-    # 数据存在于 indexed 表，而不存在于 chkchng 表
+    # 分别对比 indexed 表和 chkchng 表的每一个数据，以 indexed 表为基准
+    # 如果 某数据存在 indexed 表，不存在 chkchng 表。说明对应的文件被删除，则应该从 indexed 表中删除该数据
+    # 数据库增删改计数器+1次计数
     for file_path in indexed_dict:
         if file_path not in chkchng_dict:
-            cursor.execute("DELETE FROM indexed WHERE file_path=?", (file_path,))
-            logging.info(f"Removed files from indexed table {file_path}.")
+            delete_from_indexed(cursor, file_path)
+            db_op_count += 1
 
-    # 对比数据并更新indexed表
+    # 分别对比 indexed 表和 chkchng 表的每一个数据，以 chkchng 表为基准
+    # 如果 某数据存在 chkchng 表，不存在 indexed 表。说明是新增的文件，则应该向 indexed 表中添加该数据（此处不解析文件不添加文件内容，只添加元数据）
+    # 数据库增删改计数器+1次计数
     for file_path, chkchng_mod_time in chkchng_dict.items():
         if file_path not in indexed_dict:
-        # 数据存在于 chkchng 表，而不存在于 indexed 表
-            cursor.execute("INSERT INTO indexed SELECT *, NULL FROM chkchng WHERE file_path=?", (file_path,))
-            logging.info(f"Added files to indexed table {file_path}.")
+            insert_into_indexed(cursor, file_path)
+            db_op_count += 1
+    # 分别对比 indexed 表和 chkchng 表的每一个数据，以 chkchng 表为基准
+    # 如果 某数据存在 chkchng 表，也存在 indexed 表。说明这个文件曾经被索引过，并且当前还放在原来的路径，则应该对比indexed里保存的修改时间和此时chkchng读取的新修改时间
         else:
-        # 数据存在于 chkchng 表，也存在于 indexed 表
             indexed_mod_time = indexed_dict[file_path]
-            # chkchng表中的modification_time 和 indexed 表中的 modification_time 相同，表示两个文件相同，则不需要做任何事
-            if chkchng_mod_time == indexed_mod_time:
-                logging.debug(f"Skipped as modification times are the same {file_path}.")
-            else:
-                # 其他所有情况，删除 indexed 表中的数据，复制 chkchng 表中的数据到 Indexed 表
-                cursor.execute("DELETE FROM indexed WHERE file_path=?", (file_path,))
-                cursor.execute("INSERT INTO indexed SELECT *, NULL FROM chkchng WHERE file_path=?", (file_path,))
-                logging.info(f"Updated files in indexed table {file_path}.")
+            # 如果 indexed里保存的修改时间和此时chkchng读取的新修改时间不同，则说明文件自上次索引后被修改过，则应该更新 indexed 表中的该数据（此处不解析文件不添加文件内容，只添加元数据）
+            # 数据库增删改计数器+1次计数
+            if chkchng_mod_time != indexed_mod_time:
+                update_indexed(cursor, file_path)
+                db_op_count += 1
 
     # 清空chkchng表
     cursor.execute("DELETE FROM chkchng")
     logging.debug("Cleared chkchng table.")
-
+    # 关闭数据库连接
     conn.commit()
+    
+    # 通过数据库增删改计数器的结果判断是否需要重建数据看
+    if db_op_count != 0:
+        reindex_needed = True
+        logging.info(f"数据库增删改操作计数 - {db_op_count}")
+        return reindex_needed
+    else:
+        reindex_needed = False
+        logging.info(f"数据库增删改操作计数 - {db_op_count}")
+        return reindex_needed
+    
+# 数据库增删改操作函数
+def delete_from_indexed(cursor, file_path):
+    cursor.execute("DELETE FROM indexed WHERE file_path=?", (file_path,))
+    logging.info(f"Removed files from indexed table {file_path}.")
+
+def insert_into_indexed(cursor, file_path):
+    cursor.execute("INSERT INTO indexed SELECT *, NULL FROM chkchng WHERE file_path=?", (file_path,))
+    logging.info(f"Added files to indexed table {file_path}.")
+
+def update_indexed(cursor, file_path):
+    cursor.execute("DELETE FROM indexed WHERE file_path=?", (file_path,))
+    cursor.execute("INSERT INTO indexed SELECT *, NULL FROM chkchng WHERE file_path=?", (file_path,))
+    logging.info(f"Updated files in indexed table {file_path}.")
 
 # 解析Markdown文件
 def parse_md(file_path):
@@ -202,6 +230,7 @@ def setup_logging(log_file_path, log_level):
     logger.addHandler(file_handler)
 
 
+
 # 主函数
 def main():
 
@@ -217,9 +246,10 @@ def main():
             os.utime(log_file_path, None)
 
     config = read_config(config_path, script_dir)
-    create_database_if_not_exists(db_file_path)
     # 配置日志输出到文件
     setup_logging(log_file_path, config['log_level'])
+
+    create_database_if_not_exists(db_file_path)
     
     # 使用 multiprocessing.Manager 创建队列
     manager = multiprocessing.Manager()
@@ -244,50 +274,36 @@ def main():
         # 启动文件夹扫描和队列处理
         scan_folders()
         process_queue()
-        compare_and_update_db(conn)
+        
+        # 对比和更新数据库
+        reindex_needed = compare_and_update_db(conn)
+        logging.info(f"Reindex needed: {reindex_needed}")
 
-        # 解析文件并更新数据库
-        cursor = conn.cursor()
-        cursor.execute("SELECT file_path, extension FROM indexed WHERE file_content IS NULL")
-        files_to_parse = cursor.fetchall()
+        if reindex_needed:
+            # 解析文件并更新数据库
+            cursor = conn.cursor()
+            cursor.execute("SELECT file_path, extension FROM indexed WHERE file_content IS NULL")
+            files_to_parse = cursor.fetchall()
 
-        with ProcessPoolExecutor(max_workers=config['max_index_processes']) as executor:
-            for file_path, extension in files_to_parse:
-                future = executor.submit(parse_file, file_path, extension)
-                content = future.result()
-                if content:
-                    cursor.execute("UPDATE indexed SET file_content=? WHERE file_path=?", (content, file_path))
-                    logging.info(f"Parsed and updated file content {file_path}.")
+            with ProcessPoolExecutor(max_workers=config['max_index_processes']) as executor:
+                for file_path, extension in files_to_parse:
+                    future = executor.submit(parse_file, file_path, extension)
+                    content = future.result()
+                    if content:
+                        cursor.execute("UPDATE indexed SET file_content=? WHERE file_path=?", (content, file_path))
+                        logging.info(f"Parsed and updated file content {file_path}.")
 
-        conn.commit()
+            conn.commit()
 
+            # 创建 Whoosh schema 格式
+            schema = Schema(
+                file_name=TEXT(stored=True),
+                file_path=TEXT(stored=True),
+                file_content=TEXT(analyzer=ChineseAnalyzer())
+            )
 
-        # 创建 Whoosh schema
-        schema = Schema(
-            file_name=TEXT(stored=True),
-            file_path=TEXT(stored=True),
-            file_content=TEXT(analyzer=ChineseAnalyzer())
-        )
-
-
-        # 重新开启数据库连接
-        cursor = conn.cursor()
-        # 查询数据库
-        cursor.execute("SELECT file_path, file_name, file_content FROM indexed WHERE status='chkchng'")
-
-
-        if len(cursor.fetchall()) == 0:
-            # logging.debug(f"iiiiiiiiii {cursor.fetchall()}")
-            # 如果数据库中没有status='chkchng'，即所有数据都被索引，状态为 status='indexed'，则跳过重建索引
-            logging.info("No file changed, skip index")
-            pass
-        else:
-            # 如果数据库中有status='chkchng'，即有数据未被索引，则重建索引
-            # logging.debug(f"oooooooooo {cursor.fetchall()}")
-            logging.info("File changes detected, start index")
             # 删除之前的索引
             # 1. 判断是否存在 index_dir 文件夹
-            
             index_dir = os.path.join(script_dir, "data/index_dir")
             if not os.path.exists(index_dir):
                 # 2. 如果不存在则创建 index_dir 文件夹
@@ -311,10 +327,13 @@ def main():
                 ix = create_in(index_dir, schema)
                 writer = ix.writer()
                 logging.debug("Created index schema and writer")
-
+            
+            
+            # 重新开启数据库连接
+            cursor = conn.cursor()
+            # 读取 indexd 表内的全部数据
             cursor.execute("SELECT file_path, file_name, file_content FROM indexed")
             for row in cursor.fetchall():
-                # logging.debug(row)
                 if row is None:
                     logging.info("All files index done")
                     break
@@ -322,17 +341,21 @@ def main():
                     file_path, file_name, file_content = row
                     # 分词索引
                     index_file_content(file_path, file_name, file_content, writer)
-                    # logging.info(f"Indexed file. {file_name}")
                     # 更新数据库
                     cursor.execute("UPDATE indexed SET status='indexed' WHERE file_path=?", (file_path,))
                     logging.info(f"Indexed and updated db {file_path}.")
+
+            # 写入 Whoosh 索引
             writer.commit()
             ix.close()
             logging.debug("Closed index writer.")
 
-    cursor.close()
-    conn.close()
-    logging.debug("Closed database connection.")
+            conn.commit()
+            logging.debug("Closed database connection.")
+
+        else:
+            # nothing to do
+            logging.info("No thing to do.")
 
 if __name__ == "__main__":
     main()
