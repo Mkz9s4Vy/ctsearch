@@ -177,7 +177,7 @@ body {
 }
 
 
-#left-bottom-btn-container{
+#left-bottom-btn-container {
     height: 100%;
     display: flex;
     justify-content: space-between;
@@ -301,6 +301,20 @@ p {
     /* 使文字垂直居中 */
     font-size: 18px;
     /* 调整文字大小 */
+    /* outline: none !important; */
+    /* 移除焦点样式 */
+    /* box-shadow: none !important; */
+    /* 移除阴影 */
+    /* user-select: none; */
+    /* 防止文本被选中 */
+    -webkit-tap-highlight-color: transparent;
+    /* 移除点击高亮 */
+    /* appearance: none; */
+    /* 移除默认样式 */
+    /* -webkit-appearance: none; */
+    /* 兼容 WebKit 浏览器 */
+    /* -moz-appearance: none; */
+    /* 兼容 Mozilla 浏览器 */
 }
 
 
