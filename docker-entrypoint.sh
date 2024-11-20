@@ -8,7 +8,6 @@ if [ ! -d /app/data/singlefile ]; then mkdir -p /app/data/singlefile; fi
 
 # 复制初始化文件和目录
 if [ ! -d /app/data/index_dir ]; then cp -r /app/init/index_dir /app/data/; fi
-if [ ! -d /app/data/input ]; then cp -r /app/init/input /app/data/; fi
 if [ ! -f /app/data/config/config.ini ]; then cp /app/init/config/config.ini /app/data/config/; fi
 if [ ! -f /app/data/config/webdav_config.yaml ]; then cp /app/init/config/webdav_config.yaml /app/data/config/; fi
 
