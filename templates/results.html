@@ -42,7 +42,7 @@
 
             function clearContent() {
                 var iframe = document.getElementById('rendered-content');
-                // iframe.src = 'about:blank';
+                iframe.src = "{{ url_for('iframe_default') }}";
             }
 
             function loadFileContent(filePath, query) {
@@ -138,7 +138,7 @@
 
 
             <div id="left-bottom">
-                
+
                 <div id="left-bottom-search">
                     <form id="left-bottom-search-form" action="/search" method="get">
                         <div id="left-bottom-input-container">
@@ -147,17 +147,18 @@
                     </form>
                 </div>
 
-
-
-                <div id="left-bottom-back-home">
-                    <form id="left-bottom-back-home-form" action="/">
-                        <button id="left-bottom-back-home-btn">Back Home</button>
-                    </form>
-                </div>
-                <div id="left-bottom-separator"></div>
                 <div id="left-bottom-btn-container">
-                    <button id="left-bottom-clear-btn">Clear Preview</button>
+                    <div id="left-bottom-back-home">
+                        <form id="left-bottom-back-home-form" action="/">
+                            <button id="left-bottom-back-home-btn">Back Home</button>
+                        </form>
+                    </div>
+                    <div id="left-bottom-separator"></div>
+                    <div id="left-bottom-btn-clear">
+                        <button id="left-bottom-clear-btn">Clear Preview</button>
+                    </div>
                 </div>
+
             </div>
         </div>
 

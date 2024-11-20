@@ -89,9 +89,9 @@ body {
 #left-top-search-input {
     display: inline-block;
     width: 95%;
-    height: 95%;
+    height: 100%;
+    box-sizing: border-box;
     padding: 0;
-    margin: 0;
     border: solid;
     border-radius: 5px;
     background-color: #e0e0e0;
@@ -111,7 +111,9 @@ body {
 #left-top-results-title {
     height: 50%;
     font-size: 18px;
-    /* padding-top: 10px; */
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
 }
 
 #left-top-results-comment {
@@ -137,8 +139,6 @@ body {
 /* start left-bottom css*/
 #left-bottom {
     height: 5%;
-    display: flex;
-    justify-content: space-between;
 }
 
 
@@ -165,10 +165,9 @@ body {
 
 #left-bottom-search-input {
     display: inline-block;
-    width: 95%;
-    height: 95%;
-    padding: 0;
-    margin: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
     border: solid;
     border-radius: 5px;
     background-color: #e0e0e0;
@@ -178,9 +177,15 @@ body {
 }
 
 
+#left-bottom-btn-container{
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
 #left-bottom-back-home {
     height: 100%;
-    width: 30%;
+    width: 40%;
 }
 
 #left-bottom-back-home-form {
@@ -207,9 +212,9 @@ body {
     display: none;
 }
 
-#left-bottom-btn-container {
+#left-bottom-btn-clear {
     height: 100%;
-    width: 30%;
+    width: 40%;
 }
 
 #left-bottom-clear-btn {
@@ -310,7 +315,7 @@ p {
     }
 
     #left-top {
-        height: 10%;
+        height: 5%;
     }
 
     #left-top-search {
@@ -318,7 +323,7 @@ p {
     }
 
     #left-top-results-title {
-        height: 80%;
+        height: 100%;
         display: flex;
         align-items: center;
     }
@@ -329,19 +334,16 @@ p {
     }
 
     #left-bottom {
-        height: 3%;
+        height: 10%;
     }
 
     #left-bottom-search {
         display: flex;
-    }
-
-    #left-bottom-back-home {
-        display: none;
+        height: 50%;
     }
 
     #left-bottom-btn-container {
-        display: none;
+        height: 50%;
     }
 
     .hidden {
@@ -361,10 +363,6 @@ p {
         position: relative;
         transform: none;
     }
-
-
-
-
 
     .hidden {
         transform: none;
