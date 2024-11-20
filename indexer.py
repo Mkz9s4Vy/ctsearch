@@ -236,9 +236,9 @@ def main():
 
     # 指定目录
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(script_dir, "data/config.ini")
+    config_path = os.path.join(script_dir, "data/config","config.ini")
     db_file_path = os.path.join(script_dir, "data/index.db")
-    log_file_path = os.path.join(script_dir, "data/logs.log")
+    log_file_path = os.path.join(script_dir, "data/logs","logs.log")
 
     # 检查日志文件是否存在，如果不存在则创建
     if not os.path.exists(log_file_path):

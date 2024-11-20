@@ -17,7 +17,9 @@ EXPOSE 8000
 ENTRYPOINT ["sh", "-c"]
 
 # 在容器启动时执行文件检查和复制操作，然后运行 indexer.py，最后运行 supervisord
-CMD ["if [ ! -f /app/data/config.ini ]; then cp /app/init/config.ini /app/data/; fi && \
+CMD ["if [ ! -f /app/data/config/config.ini ]; then cp /app/init/config/config.ini /app/data/; fi && \
+    if [ ! -f /app/data/config/webdav_config.yaml ]; then cp /app/init/config/webdav_config.yaml /app/data/; fi && \
     if [ ! -d /app/data/index_dir ]; then cp -r /app/init/index_dir /app/data/; fi && \
     if [ ! -d /app/data/input ]; then cp -r /app/init/input /app/data/; fi && \
+    if [ ! -d /app/data/singlefile ]; then cp -r /app/init/singlefile /app/data/; fi && \
     supervisord -c supervisord.conf"]

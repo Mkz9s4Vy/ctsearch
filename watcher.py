@@ -112,10 +112,10 @@ def monitor_folders(delay, indexer_script, current_folders):
 def main():
     global observer, current_folders
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    log_file = os.path.join(script_dir, 'data', 'watcher.log')
+    log_file = os.path.join(script_dir, 'data/logs', 'watcher.log')
     setup_logging(log_file)
     
-    config_file = os.path.join(script_dir, 'data', 'config.ini')
+    config_file = os.path.join(script_dir, 'data/config', 'config.ini')
     indexer_script = os.path.join(script_dir, 'indexer.py')
     delay = 30  # 30秒延迟
     
