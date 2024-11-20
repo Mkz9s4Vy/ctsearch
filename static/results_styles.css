@@ -372,7 +372,7 @@ p {
 
 @media (min-width: 1001px) {
     #left-column {
-        width: 30%;
+        width: 25%;
         /* 设置左侧栏的宽度 */
         position: relative;
         transform: none;
@@ -389,7 +389,7 @@ p {
 
     #file-content {
         position: relative;
-        width: 70%;
+        width: 75%;
         /* 设置右侧内容的宽度 */
     }
 }
