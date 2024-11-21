@@ -1,12 +1,22 @@
 # data/webdav_config.yaml
 host: "0.0.0.0"
+# webdav 对外服务端口
 port: 8192
+
+# 文件存放路径，不建议修改
+# 如果一定要修改，请查看 python wsgidav 文档
+# 修改 "data/singlefile" 需要同步修改外部的目录名称和 config.ini
 provider_mapping:
   "/": "data/singlefile"
+
+# webdav授权用户
 simple_dc:
   user_mapping:
+# 不要修改，如果一定要修改，请查看 python wsgidav 文档
     "/":
+# username 修改为想要的用户名
       "username":
+# your_password 修改为想要的密码
         password: "your_password"
 
 
