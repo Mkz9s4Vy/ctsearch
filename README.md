@@ -109,21 +109,7 @@ docker run -d --name=ctsearch -p 8000:8000 -p 8192:8192 -v ~/ctsearch:/app/data 
 
 `podman pull ghcr.io/mkz9s4vy/ctsearch:ver2024-11-23`
 
-### 2. 准备放置数据的文件夹，假设为 `~/ctsearch`
-
-`mkdir ~/ctsearch`
-
-### 3. 生成配置文件
-
-`podman run --rm --name=ctsearch -v ~/ctsearch:/app/data ghcr.io/mkz9s4vy/ctsearch:ver2024-11-23`
-
-### 4. 修改配置文件
-
-同 Docker 部署 - 步骤4 内容。
-
-### 5. 启动容器
-
-Podman Quadlet 文件内容。
+### 2. Quadlet 文件
 
 ```
 [Unit]
@@ -146,6 +132,26 @@ Restart=always
 WantedBy=default.target
 ```
 
+
+### 3. 准备放置数据的文件夹，假设为 `~/ctsearch`
+
+`mkdir ~/ctsearch`
+
+### 3. 生成配置文件
+
+`systemctl --user daemon-reload`
+
+`systemctl --user start ctsearch`
+
+`systemctl --user stop ctsearch`
+
+### 4. 修改配置文件
+
+同 Docker 部署 - 步骤4 内容。
+
+### 5. 启动容器
+
+`systemctl --user start ctsearch`
 
 ## 应用使用
 
