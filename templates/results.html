@@ -24,8 +24,10 @@
             const fileContentContainer = document.getElementById('file-content');
             const container = document.querySelector('.container');
             const toggleLeftColumnBtn = document.getElementById('toggle-left-column-btn');
-            // 获取删除按钮元素。 将 "deleteButton" 替换为您实际的按钮 ID。
+            const resultCountSpan = document.getElementById('result-count');
             const deleteFileBtn = document.getElementById('left-bottom-delete-btn');
+
+            resultCountSpan.innerText = fileItems.length;
 
             if (deleteFileBtn) {
                 deleteFileBtn.addEventListener('click', () => {
@@ -152,7 +154,7 @@
 
                 <div id="left-top-results-title">
                     <p>
-                        <span id="left-top-results-comment">Search Results for</span>
+                        <span id="left-top-results-comment">search  <span id="result-count"></span> results for</span>
                         <span id="left-top-results-query">"{{ query }}"</span>
                     </p>
                 </div>
