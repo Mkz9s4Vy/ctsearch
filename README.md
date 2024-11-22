@@ -94,7 +94,9 @@ supervisord.conf，用于使用 supervisord 拉起和管理上述各项服务。
 
 ### 5. 修改完成后，启动容器
 
-`docker run -d --name=ctsearch -p 8000:8000 -p 8192:8192 -v ~/ctsearch:/app/data ghcr.io/mkz9s4vy/ctsearch:ver2024-11-23`
+```
+docker run -d --name=ctsearch -p 8000:8000 -p 8192:8192 -v ~/ctsearch:/app/data ghcr.io/mkz9s4vy/ctsearch:ver2024-11-23
+```
 
 `8000` 端口是 Flask 应用入口，访问 `ip:8000` 即可以进行搜索内容，预览文件和删除文件。
 
