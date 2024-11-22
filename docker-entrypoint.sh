@@ -3,7 +3,7 @@
 # 创建必要的目录并设置权限
 if [ ! -d /app/data/config ]; then mkdir -p /app/data/config; fi
 if [ ! -d /app/data/logs ]; then mkdir -p /app/data/logs; fi
-if [ ! -d /app/data/singlefile ]; then mkdir -p /app/data/singlefile; fi
+if [ ! -d /app/data/webdata ]; then mkdir -p /app/data/webdata; fi
 
 
 # 复制初始化文件和目录

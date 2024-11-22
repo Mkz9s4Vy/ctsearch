@@ -5,9 +5,9 @@ port: 8192
 
 # 文件存放路径，不建议修改
 # 如果一定要修改，请查看 python wsgidav 文档
-# 修改 "data/singlefile" 需要同步修改外部的目录名称和 config.ini
+# 修改 "data/webdata" 需要同步修改外部的目录名称和 config.ini
 provider_mapping:
-  "/": "data/singlefile"
+  "/": "data/webdata"
 
 # webdav授权用户
 simple_dc:
