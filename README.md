@@ -208,3 +208,6 @@ Mkz9s4Vy/ctsearch 项目，Github链接 `https://github.com/Mkz9s4Vy/ctsearch`�
 - [DeepSeek](https://www.deepseek.com)
 
 
+## LICENSE
+
+MIT license
