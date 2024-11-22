@@ -183,9 +183,31 @@ body {
     justify-content: space-between;
 }
 
+
+#left-bottom-btn-delete{
+    height: 100%;
+    width: 20%;
+}
+
+#left-bottom-delete-btn{
+    height: 75%;
+    width: 100%;
+    margin-top: 10px;
+    border: solid;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    padding-block: 0;
+    padding-inline: 0;
+}
+
 #left-bottom-back-home {
     height: 100%;
-    width: 40%;
+    width: 20%;
 }
 
 #left-bottom-back-home-form {
@@ -214,7 +236,7 @@ body {
 
 #left-bottom-btn-clear {
     height: 100%;
-    width: 40%;
+    width: 20%;
 }
 
 #left-bottom-clear-btn {

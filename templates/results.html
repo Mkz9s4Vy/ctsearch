@@ -24,6 +24,46 @@
             const fileContentContainer = document.getElementById('file-content');
             const container = document.querySelector('.container');
             const toggleLeftColumnBtn = document.getElementById('toggle-left-column-btn');
+            // 获取删除按钮元素。 将 "deleteButton" 替换为您实际的按钮 ID。
+            const deleteFileBtn = document.getElementById('left-bottom-delete-btn');
+
+            if (deleteFileBtn) {
+                deleteFileBtn.addEventListener('click', () => {
+                    const iframe = document.getElementById('rendered-content');
+                    const filePath = new URL(iframe.src).searchParams.get('path');
+
+                    if (filePath) {
+                        fetch(`/delete_file?path=${encodeURIComponent(filePath)}`, { method: 'DELETE' })
+                            .then(response => {
+                                if (response.ok) {
+                                    clearContent();  // 清除 iframe 内容
+                                    // 可选：从搜索结果列表中删除已删除的文件
+                                    // 并相应地更新显示
+                                    location.reload(); // 刷新页面
+                                } else {
+                                    alert('删除文件失败。');
+                                }
+                            })
+                            .catch(error => {
+                                console.error("删除文件时出错:", error);
+                                alert('删除文件失败。');
+                            });
+                    }
+                });
+
+                // 根据是否预览文件启用/禁用删除按钮
+                const observeIframeSrc = () => {
+                    const iframe = document.getElementById('rendered-content');
+                    const filePath = new URL(iframe.src).searchParams.get('path');
+                    deleteFileBtn.disabled = !filePath;
+                };
+                const iframeMutationObserver = new MutationObserver(observeIframeSrc);
+                iframeMutationObserver.observe(document.getElementById('rendered-content'), { attributes: true });
+                observeIframeSrc();
+            } else {
+                console.error("获取元素失败: left-bottom-delete-btn");
+            };
+
 
             fileItems.forEach(item => {
                 item.addEventListener('click', function () {
@@ -148,14 +188,22 @@
                 </div>
 
                 <div id="left-bottom-btn-container">
+
+                    <div id="left-bottom-btn-delete">
+                        <button id="left-bottom-delete-btn" disabled>Delete</button>
+                    </div>
+
+
                     <div id="left-bottom-back-home">
                         <form id="left-bottom-back-home-form" action="/">
-                            <button id="left-bottom-back-home-btn">Back Home</button>
+                            <button id="left-bottom-back-home-btn">Home</button>
                         </form>
                     </div>
+
+
                     <div id="left-bottom-separator"></div>
                     <div id="left-bottom-btn-clear">
-                        <button id="left-bottom-clear-btn">Clear Preview</button>
+                        <button id="left-bottom-clear-btn">Clear</button>
                     </div>
                 </div>
 
