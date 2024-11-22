@@ -228,6 +228,10 @@ def setup_logging(log_file_path, log_level):
     file_handler = RotatingFileHandler(log_file_path, maxBytes=10*1024*1024, backupCount=5)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+    # 配置 jieba 库的日志记录器
+    jieba_logger = logging.getLogger(jieba.__name__)
+    jieba_logger.setLevel(log_level)
+    jieba_logger.addHandler(file_handler)
 
 
 
@@ -353,6 +357,7 @@ def main():
             conn.commit()
             logging.debug("Closed database connection.")
 
+            logging.info("本次索引完成")
         else:
             # nothing to do
             logging.info("No thing to do.")

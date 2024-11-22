@@ -138,7 +138,7 @@ def main():
     def reload_config():
         global observer, current_folders
         while True:
-            logging.info("Reloading configuration...")
+            logging.debug("Reloading configuration...")
             new_folders = read_config(config_file, script_dir)
             if new_folders:
                 # 对比新旧文件夹列表

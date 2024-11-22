@@ -37,8 +37,28 @@ import re
 
 # 脚本所在目录
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# 定义日志文件路径
+# 配置文件路径
+config_file = os.path.join(script_dir, "data/config/config.ini")
+# 日志文件路径
 log_file = os.path.join(script_dir, "data/logs", "searcher.log")
+# Whoosh 索引存储的目录
+index_dir = os.path.join(script_dir, "data/index_dir")
+
+# 配置解析器
+config = configparser.ConfigParser()
+config.read(config_file)
+
+# 获取 folders 配置项的值，并将其分割成列表
+folder_names = config.get("Folders", "folders").split(",")
+# 构建 BASE_DIR 列表，包含 data 文件夹下所有子目录的完整路径
+DEL_BASE_DIR = tuple(
+    [os.path.join(script_dir, "data", folder_name) for folder_name in folder_names]
+)
+
+# 读取 [Logging] 部分的 log_level 配置项
+log_level_str = config.get('Logging', 'log_level', fallback='INFO')
+log_level = getattr(logging, log_level_str.upper(), logging.INFO)
+
 
 # 检查日志文件是否存在，如果不存在则创建
 log_dir = os.path.dirname(log_file)
@@ -53,20 +73,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-# 定义 Whoosh 索引存储的目录
-index_dir = os.path.join(script_dir, "data/index_dir")
-config_file = os.path.join(script_dir, "data/config/config.ini")
-
-# 配置解析器
-config = configparser.ConfigParser()
-config.read(config_file)
-
-# 获取 folders 配置项的值，并将其分割成列表
-folder_names = config.get("Folders", "folders").split(",")
-# 构建 BASE_DIR 列表，包含 data 文件夹下所有子目录的完整路径
-DEL_BASE_DIR = tuple(
-    [os.path.join(script_dir, "data", folder_name) for folder_name in folder_names]
-)
 
 # 定义了一个搜索函数，"dir:xxx"，不使用 jieba 分词的索引结果进行搜索
 # 当使用 "dir:xxx" 搜索时，默认给 "xxx" 加上BASE_DIR，以列出该目录下的全部文件，
@@ -96,7 +102,7 @@ markdown_extensions = [
 try:
     ix = open_dir(index_dir)
 except Exception as e:
-    print(f"Error opening index: {e}")
+    logging.debug(f"Error opening index: {e}")
     exit(1)
 
 
@@ -316,4 +322,4 @@ def delete_file():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=(log_level == logging.DEBUG))
