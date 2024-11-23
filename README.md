@@ -1,5 +1,5 @@
 ## 简介
-本项目所有代码均由 AI 完成，作者只负责提出需求，确定实现方案，测试代码。
+本项目所有代码均由 AI 完成。
 
 本项目是一个用于扫描、索引和管理文件的工具。它能够自动扫描指定文件夹中的文件，对文件内容进行解析并建立索引，提供了一个网页来搜索和查看文件内容。
 
@@ -19,7 +19,7 @@ WebDAV服务器：提供一个基于WebDAV协议的服务器，用户可以通�
 
 
 
-## 技术细节
+## 文件说明
 indexer.py，用于文件解析和索引。使用各种库对文件内容进行解析，然后使用 jieba 分词将解析后的纯文本内容分词索引，并将索引结果存入 Whoosh 中。
 
 searcher.py，用于文件内容搜索和建立用户界面。使用 Flask 建立用户界面，调用 Whoosh 进行搜索。
@@ -182,10 +182,6 @@ WantedBy=default.target
 
 - 如果需要重建索引，请删除 `index_dir` 和 `index.db`，然后重启容器。
 
-- 没有任何桌面应用，也不计划制作。
-
-- 可以提 issue，但不接受任何 PR。
-
 - 随缘开发，没有路线图，功能随时增加。
 
 
@@ -206,6 +202,9 @@ Mkz9s4Vy/ctsearch 项目，Github链接 `https://github.com/Mkz9s4Vy/ctsearch`�
 - [Lobe Chat](https://github.com/lobehub/lobe-chat)
 
 - [DeepSeek](https://www.deepseek.com)
+
+- [logoly](https://github.com/bestony/logoly)
+
 
 
 ## LICENSE

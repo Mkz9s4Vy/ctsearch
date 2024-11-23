@@ -7,7 +7,26 @@ RUN mkdir /app
 
 WORKDIR /app
 
-COPY . /app
+COPY requirements.txt /app
+
+COPY indexer.py /app
+
+COPY searcher.py /app
+
+COPY watcher.py /app
+
+COPY webdav_server.py /app
+
+COPY supervisord.conf /app
+
+COPY docker-entrypoint.sh /app
+
+COPY init/ /app/init/
+
+COPY static/ /app/static/
+
+COPY templates/ /app/templates/
+
 
 RUN pip install --no-cache -r requirements.txt
 
