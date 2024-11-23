@@ -7,19 +7,21 @@ RUN mkdir /app
 
 WORKDIR /app
 
-COPY requirements.txt /app
+COPY ["requirements.txt", "indexer.py /app", "searcher.py /app", "watcher.py /app", "webdav_server.py", "supervisord.conf", "docker-entrypoint.sh", "/app"]
 
-COPY indexer.py /app
+# COPY requirements.txt /app
 
-COPY searcher.py /app
+# COPY indexer.py /app
 
-COPY watcher.py /app
+# COPY searcher.py /app
 
-COPY webdav_server.py /app
+# COPY watcher.py /app
 
-COPY supervisord.conf /app
+# COPY webdav_server.py /app
 
-COPY docker-entrypoint.sh /app
+# COPY supervisord.conf /app
+
+# COPY docker-entrypoint.sh /app
 
 COPY init/ /app/init/
 
