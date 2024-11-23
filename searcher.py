@@ -121,6 +121,9 @@ def search_index(query_str):
             # 提取目录路径
             dir_name = query_str[4:].strip()
             dir_path = os.path.join(BASE_DIR, dir_name)
+            # 验证目录是否在允许的范围内
+            if not any(dir_path.startswith(base_dir) for base_dir in DEL_BASE_DIR):
+                return results
             if os.path.isdir(dir_path):
                 for root, _, files in os.walk(dir_path):
                     for file_name in files:
