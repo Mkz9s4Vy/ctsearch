@@ -7,7 +7,7 @@ RUN addgroup -g 1000 appgroup && \
 
 WORKDIR /app
 
-COPY ["requirements.txt", "indexer.py /app", "searcher.py /app", "watcher.py /app", "webdav_server.py", "supervisord.conf", "docker-entrypoint.sh", "/app/"]
+COPY ["requirements.txt", "indexer.py", "searcher.py", "watcher.py", "webdav_server.py", "supervisord.conf", "docker-entrypoint.sh", "/app/"]
 
 # COPY requirements.txt /app
 
