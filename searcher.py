@@ -49,7 +49,7 @@ config = configparser.ConfigParser()
 config.read(config_file)
 
 # 获取 folders 配置项的值，并将其分割成列表
-folder_names = config.get("Folders", "folders").split(",")
+folder_names = [folder.strip() for folder in config['Folders']['folders'].split(',')]
 # 构建 BASE_DIR 列表，包含 data 文件夹下所有子目录的完整路径
 DEL_BASE_DIR = tuple(
     [os.path.join(script_dir, "data", folder_name) for folder_name in folder_names]
@@ -121,8 +121,8 @@ def search_index(query_str):
             # 提取目录路径
             dir_name = query_str[4:].strip()
             dir_path = os.path.join(BASE_DIR, dir_name)
-            # 验证目录是否在允许的范围内
-            if not any(dir_path.startswith(base_dir) for base_dir in DEL_BASE_DIR):
+            # SECURITY CHECK:验证目录是否在允许的范围内
+            if dir_path not in DEL_BASE_DIR:
                 return results
             if os.path.isdir(dir_path):
                 for root, _, files in os.walk(dir_path):
@@ -134,7 +134,7 @@ def search_index(query_str):
                                 "file_name": file_name,
                                 "file_path": file_path,
                                 "folder_path": folder_path,
-                                "score": 1,  # 假设所有文件的得分相同
+                                "score": 1,
                             }
                         )
             else:
