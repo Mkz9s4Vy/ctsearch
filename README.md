@@ -20,15 +20,15 @@ WebDAV服务器：提供一个基于WebDAV协议的服务器，用户可以通�
 
 
 ## 文件说明
-indexer.py，用于文件解析和索引。使用各种库对文件内容进行解析，然后使用 jieba 分词将解析后的纯文本内容分词索引，并将索引结果存入 Whoosh 中。
+`indexer.py`，用于文件解析和索引。使用各种库对文件内容进行解析，然后使用 jieba 分词将解析后的纯文本内容分词索引，并将索引结果存入 Whoosh 中。
 
-searcher.py，用于文件内容搜索和建立用户界面。使用 Flask 建立用户界面，调用 Whoosh 进行搜索。
+`searcher.py`，用于文件内容搜索和建立用户界面。使用 Flask 建立用户界面，调用 Whoosh 进行搜索。
 
-watcher.py，用于文件变动监控。使用 watchdog 监控文件的创建、删除、修改操作，并调用 indexer 进行扫描和索引。
+`watcher.py`，用于文件变动监控。使用 watchdog 监控文件的创建、删除、修改操作，并调用 indexer 进行扫描和索引。
 
-webdav_server.py，用于建立 WebDav 服务器。使用 wsgidav 建立 WebDAV 服务器，提供文件上传入口。
+`webdav_server.py`，用于建立 WebDav 服务器。使用 wsgidav 建立 WebDAV 服务器，提供文件上传入口。
 
-supervisord.conf，用于使用 supervisord 拉起和管理上述各项服务。
+`supervisord.conf`，用于使用 supervisord 拉起和管理上述各项服务。
 
 
 
