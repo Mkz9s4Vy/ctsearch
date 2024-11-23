@@ -3,6 +3,7 @@ import logging
 import configparser
 import threading
 import subprocess
+import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -159,15 +160,14 @@ def main():
                     if not observer:
                         logging.warning("Failed to reload configuration. Exiting...")
                         return
-            threading.Event().wait(60)
+            time.sleep(60)
 
     config_reload_thread = threading.Thread(target=reload_config)
     config_reload_thread.daemon = True
     config_reload_thread.start()
 
     try:
-        while True:
-            pass
+        observer.join()
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
