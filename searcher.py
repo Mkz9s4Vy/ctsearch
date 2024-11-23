@@ -117,11 +117,26 @@ atexit.register(close_index)
 def search_index(query_str):
     results = []
     try:
-        if query_str.startswith("dir:"):
+        # 搜索命令为 "root:" 时，列出正在监控的文件夹列表
+        if query_str == "root:":
+            # 列出 folder_names 的值
+            for folder_name in folder_names:
+                folder_path = os.path.join(BASE_DIR, folder_name)
+                results.append(
+                    {
+                        # 将 folder_name 当作 file_name 返回是为了在搜索结果页展示的时候更好看
+                        "file_name": folder_name,
+                        "folder_name": folder_name,
+                        "folder_path": folder_path,
+                        "score": 1,
+                    }
+                )
+        # 搜索命令以 "ls:" 开头时，列出 "ls: xxx" xxx里所有的文件。
+        elif query_str.startswith("ls:"):
             # 提取目录路径
-            dir_name = query_str[4:].strip()
+            dir_name = query_str.split(":", 1)[1].strip()
             dir_path = os.path.join(BASE_DIR, dir_name)
-            # SECURITY CHECK:验证目录是否在允许的范围内
+            # 验证目录是否在允许的范围内
             if dir_path not in DEL_BASE_DIR:
                 return results
             if os.path.isdir(dir_path):
@@ -138,7 +153,7 @@ def search_index(query_str):
                             }
                         )
             else:
-                print(f"Directory not found: {dir_path}")
+                return results
         else:
             with ix.searcher() as searcher:
                 parser = QueryParser("file_content", ix.schema)
@@ -159,7 +174,7 @@ def search_index(query_str):
                         }
                     )
     except Exception as e:
-        print(f"Error during search: {e}")
+        return results
     return results
 
 
