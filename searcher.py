@@ -47,7 +47,6 @@ INDEX_DIR = os.path.join(SCRIPT_DIR, "data", "index_dir")
 # 配置解析器
 config = configparser.ConfigParser()
 config.read(CONFIG_FILE)
-print(config.read(CONFIG_FILE))
 
 # 获取 folders 配置项的值，并将其分割成列表
 FOLDER_NAMES = [folder.strip() for folder in config["Folders"]["folders"].split(",")]

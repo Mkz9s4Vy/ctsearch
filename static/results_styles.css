@@ -106,6 +106,9 @@ body {
 
 #left-top-logo-img {
     height: 100%;
+    border: solid;
+    border-color: #e0e0e0;
+    border-radius: 5px;
 }
 
 #left-top-results-title {
