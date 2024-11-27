@@ -18,6 +18,12 @@ Web界面：提供一个基于Flask的Web界面，用户可以通过该界面进
 WebDAV服务器：提供一个基于WebDAV协议的服务器，用户可以通过WebDAV客户端访问和管理文件。
 
 
+## 图片说明
+
+[homepage](.github/homepage.png)
+
+[retults](.github/results page.png)
+
 
 ## 文件说明
 `indexer.py`，用于文件解析和索引。使用各种库对文件内容进行解析，然后使用 jieba 分词将解析后的纯文本内容分词索引，并将索引结果存入 Whoosh 中。
