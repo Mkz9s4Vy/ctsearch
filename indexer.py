@@ -224,7 +224,7 @@ def parse_office_file(file_path, extension):
 
 def parse_docx(file_path):
     try:
-        from docx import Document
+        
         doc = Document(file_path)
         return "\n".join([para.text for para in doc.paragraphs])
     except Exception as e:
@@ -275,7 +275,8 @@ def parse_file(file_path, extension):
 
 def index_file_content(file_path, file_name, file_content, writer):
     # 使用结巴分词进行分词索引
-    segmented_content = " ".join(jieba.cut_for_search(file_content, HMM=True))
+    wait_index_content = file_path + file_content
+    segmented_content = " ".join(jieba.cut_for_search(wait_index_content, HMM=True))
     writer.add_document(file_name=file_name, file_path=file_path, file_content=segmented_content)
 
 # 设置日志格式
