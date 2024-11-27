@@ -12,6 +12,7 @@ from flask import (
     redirect,
     url_for,
     jsonify,
+    Response,
 )
 import markdown
 from markdown.extensions.toc import TocExtension
@@ -34,6 +35,9 @@ import docx
 import pptx
 from bs4 import BeautifulSoup
 import re
+from urllib.parse import unquote
+
+
 
 # 脚本所在目录
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -214,15 +218,19 @@ def iframe_default():
 def render_file():
     file_path = request.args.get("path")
     query_str = request.args.get("query")
+
+    # 解码文件路径
+    file_path = unquote(file_path)
+
     if not file_path or not os.path.exists(file_path):
         return render_template("iframe_default.html"), 404
 
     try:
         file_extension = os.path.splitext(file_path)[1]
-        with open(file_path, "r", encoding="utf-8") as file:
-            content = file.read()
 
         if file_extension == ".md":
+            with open(file_path, "r", encoding="utf-8") as file:
+                content = file.read()
             rendered_content = markdown.markdown(
                 content, extensions=MARKDOWN_EXTENSIONS
             )
@@ -248,7 +256,8 @@ def render_file():
                 f"{custom_css_link}<div>{rendered_content}</div>", url_for=url_for
             )
         elif file_extension == ".html":
-            rendered_content = content
+            with open(file_path, "r", encoding="utf-8") as file:
+                rendered_content = file.read()
         elif file_extension == ".docx":
             doc = docx.Document(file_path)
             rendered_content = "<html><body><h1>{}</h1>".format(
@@ -257,7 +266,6 @@ def render_file():
             for para in doc.paragraphs:
                 rendered_content += "<p>{}</p>".format(para.text)
             rendered_content += "</body></html>"
-            doc.close()
         elif file_extension == ".pptx":
             prs = pptx.Presentation(file_path)
             rendered_content = "<html><body><h1>{}</h1>".format(
@@ -270,7 +278,9 @@ def render_file():
             rendered_content += "</body></html>"
             prs.close()
         else:
-            rendered_content = f"<html><body><pre>{content}</pre></body></html>"
+            with open(file_path, "rb") as file:
+                content = file.read()
+            rendered_content = f"<html><body><pre>{content.decode('utf-8', errors='replace')}</pre></body></html>"
 
         rendered_content += """
         <script>
@@ -298,9 +308,10 @@ def render_file():
         """
 
         return rendered_content
+    except UnicodeDecodeError as e:
+        return Response(f"Error reading file: {str(e)}", status=500), 500
     except Exception as e:
-        return render_template("index.html"), 404
-
+        return Response(f"An error occurred: {str(e)}", status=500), 500
 
 @app.route("/delete_file", methods=["DELETE"])
 def delete_file():

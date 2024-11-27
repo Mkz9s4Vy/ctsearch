@@ -15,6 +15,10 @@ import jieba.analyse
 from jieba.analyse import ChineseAnalyzer
 from whoosh.fields import Schema, TEXT, ID
 from whoosh.index import create_in, open_dir, exists_in, create_in
+from docx import Document
+
+
+
 
 
 
@@ -206,14 +210,68 @@ def parse_html(file_path):
         logging.error(f"Error parsing HTML file {file_path}: {e}")
         return None
 
-# 解析文件
+def parse_office_file(file_path, extension):
+    if extension == '.docx':
+        return parse_docx(file_path)
+    elif extension == '.doc':
+        return parse_doc(file_path)
+    elif extension == '.pptx':
+        return parse_pptx(file_path)
+    elif extension == '.ppt':
+        return parse_ppt(file_path)
+    else:
+        raise ValueError(f"Unsupported office file extension: {extension}")
+
+def parse_docx(file_path):
+    try:
+        from docx import Document
+        doc = Document(file_path)
+        return "\n".join([para.text for para in doc.paragraphs])
+    except Exception as e:
+        logging.error(f"Error parsing docx file {file_path}: {e}")
+        return None
+
+def parse_doc(file_path):
+    try:
+        import textract
+        return textract.process(file_path).decode('utf-8')
+    except Exception as e:
+        logging.error(f"Error parsing doc file {file_path}: {e}")
+        return None
+
+def parse_pptx(file_path):
+    try:
+        from pptx import Presentation
+        prs = Presentation(file_path)
+        text_runs = []
+        for slide in prs.slides:
+            for shape in slide.shapes:
+                if hasattr(shape, "text"):
+                    text_runs.append(shape.text)
+        return "\n".join(text_runs)
+    except Exception as e:
+        logging.error(f"Error parsing pptx file {file_path}: {e}")
+        return None
+
+def parse_ppt(file_path):
+    try:
+        import textract
+        return textract.process(file_path).decode('utf-8')
+    except Exception as e:
+        logging.error(f"Error parsing ppt file {file_path}: {e}")
+        return None
+
+
 def parse_file(file_path, extension):
     if extension == '.md':
         return parse_md(file_path)
     elif extension == '.html':
         return parse_html(file_path)
+    elif extension in ['.docx', '.doc', '.pptx', '.ppt']:
+        return parse_office_file(file_path, extension)
     else:
         raise ValueError(f"Unsupported file extension: {extension}")
+
 
 def index_file_content(file_path, file_name, file_content, writer):
     # 使用结巴分词进行分词索引
