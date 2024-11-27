@@ -20,9 +20,9 @@ WebDAV服务器：提供一个基于WebDAV协议的服务器，用户可以通�
 
 ## 图片说明
 
-[homepage](.github/homepage.png)
+![homepage](.github/homepage.png)
 
-[retults](.github/results page.png)
+![retults](.github/results_page.png)
 
 
 ## 文件说明
