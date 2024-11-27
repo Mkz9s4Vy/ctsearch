@@ -155,7 +155,7 @@ WantedBy=default.target
 
 ## 应用使用
 
-- 以下功能说明仅针对 `ghcr.io/mkz9s4vy/ctsearch:ver2024-11-23` 版本。
+- 以下功能说明仅针对 `ghcr.io/mkz9s4vy/ctsearch:ver2024-11-24` 版本。
 
 - 在输入框输入内容，再敲击 `Enter` 键即可搜索文件内容。
 
