@@ -2,6 +2,7 @@ import os
 import logging.config
 import configparser
 import atexit
+import sqlite3
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser
 from flask import (
@@ -31,8 +32,6 @@ from markdown.extensions.meta import MetaExtension
 from markdown.extensions.abbr import AbbrExtension
 from markdown.extensions.legacy_em import LegacyEmExtension
 from markdown.extensions.md_in_html import MarkdownInHtmlExtension
-import docx
-import pptx
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import unquote
@@ -47,6 +46,8 @@ CONFIG_FILE = os.path.join(SCRIPT_DIR, "data/config", "config.ini")
 LOG_FILE = os.path.join(SCRIPT_DIR, "data/logs", "searcher.log")
 # Whoosh 索引存储的目录
 INDEX_DIR = os.path.join(SCRIPT_DIR, "data", "index_dir")
+# 数据库文件路径
+db_file_path = os.path.join(SCRIPT_DIR, "data", "index.db")
 
 # 配置解析器
 config = configparser.ConfigParser()
@@ -228,9 +229,15 @@ def render_file():
     try:
         file_extension = os.path.splitext(file_path)[1]
 
-        if file_extension == ".md":
-            with open(file_path, "r", encoding="utf-8") as file:
-                content = file.read()
+        if file_extension in ['.docx', '.doc', '.pptx', '.ppt', '.xlsx', '.xls', '.csv', '.json', '.xml','.md']:
+            with sqlite3.connect(db_file_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT file_content FROM indexed WHERE file_path = ?", (file_path,))
+                row = cursor.fetchone()
+                if row:
+                    content = row[0]
+                else:
+                    content = ""
             rendered_content = markdown.markdown(
                 content, extensions=MARKDOWN_EXTENSIONS
             )
@@ -258,25 +265,6 @@ def render_file():
         elif file_extension == ".html":
             with open(file_path, "r", encoding="utf-8") as file:
                 rendered_content = file.read()
-        elif file_extension == ".docx":
-            doc = docx.Document(file_path)
-            rendered_content = "<html><body><h1>{}</h1>".format(
-                doc.core_properties.title
-            )
-            for para in doc.paragraphs:
-                rendered_content += "<p>{}</p>".format(para.text)
-            rendered_content += "</body></html>"
-        elif file_extension == ".pptx":
-            prs = pptx.Presentation(file_path)
-            rendered_content = "<html><body><h1>{}</h1>".format(
-                prs.core_properties.title
-            )
-            for slide in prs.slides:
-                for shape in slide.shapes:
-                    if hasattr(shape, "text"):
-                        rendered_content += "<p>{}</p>".format(shape.text)
-            rendered_content += "</body></html>"
-            prs.close()
         else:
             with open(file_path, "rb") as file:
                 content = file.read()
