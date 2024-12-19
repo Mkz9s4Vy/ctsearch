@@ -213,6 +213,8 @@ Mkz9s4Vy/ctsearch 项目，Github链接 `https://github.com/Mkz9s4Vy/ctsearch`�
 
 - [DeepSeek](https://www.deepseek.com)
 
+- [MarkItDown](https://github.com/microsoft/markitdown)
+
 - [logoly](https://github.com/bestony/logoly)
 
 
