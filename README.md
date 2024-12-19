@@ -26,7 +26,7 @@ WebDAV服务器：提供一个基于WebDAV协议的服务器，用户可以通�
 
 
 ## 文件说明
-`indexer.py`，用于文件解析和索引。使用各种库对文件内容进行解析，然后使用 jieba 分词将解析后的纯文本内容分词索引，并将索引结果存入 Whoosh 中。
+`indexer.py`，用于文件解析和索引。使用 markitdown 库对 office 文件进行解析，然后使用 jieba 分词将解析后的纯文本内容分词索引，并将索引结果存入 Whoosh 中。
 
 `searcher.py`，用于文件内容搜索和建立用户界面。使用 Flask 建立用户界面，调用 Whoosh 进行搜索。
 
@@ -161,7 +161,7 @@ WantedBy=default.target
 
 ## 应用使用
 
-- 以下功能说明仅针对 `ghcr.io/mkz9s4vy/ctsearch:ver2024-11-24` 版本。
+- 以下功能说明仅针对 `ghcr.io/mkz9s4vy/ctsearch:ver2024-12-19` 版本。
 
 - 在输入框输入内容，再敲击 `Enter` 键即可搜索文件内容。
 
