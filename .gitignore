@@ -1,7 +1,13 @@
 # personal data
 data/
 
-
+# conda
+compiler_compat/
+conda-meta/
+etc/
+man/
+share/
+ssl/
 
 # default ignore
 # Python
