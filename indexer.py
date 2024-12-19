@@ -9,15 +9,11 @@ from logging.handlers import RotatingFileHandler
 import multiprocessing
 import shutil
 from concurrent.futures import ProcessPoolExecutor
-from bs4 import BeautifulSoup
-import markdown
 import jieba.analyse
 from jieba.analyse import ChineseAnalyzer
 from whoosh.fields import Schema, TEXT, ID
 from whoosh.index import create_in, open_dir, exists_in, create_in
-from docx import Document
-
-
+from markitdown import MarkItDown
 
 
 
@@ -194,81 +190,28 @@ def parse_md(file_path):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
-            return markdown.markdown(content)
+            return content
+            # return markdown.markdown(content)
     except Exception as e:
         logging.error(f"Error parsing Markdown file {file_path}: {e}")
         return None
 
-# 解析HTML文件
-def parse_html(file_path):
+def parse_to_md(file_path):
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
-            soup = BeautifulSoup(content, 'html.parser')
-            return soup.get_text()
+        md = MarkItDown()
+        result = md.convert(file_path)
+        content = result.text_content
+        return content
     except Exception as e:
-        logging.error(f"Error parsing HTML file {file_path}: {e}")
-        return None
-
-def parse_office_file(file_path, extension):
-    if extension == '.docx':
-        return parse_docx(file_path)
-    elif extension == '.doc':
-        return parse_doc(file_path)
-    elif extension == '.pptx':
-        return parse_pptx(file_path)
-    elif extension == '.ppt':
-        return parse_ppt(file_path)
-    else:
-        raise ValueError(f"Unsupported office file extension: {extension}")
-
-def parse_docx(file_path):
-    try:
-        
-        doc = Document(file_path)
-        return "\n".join([para.text for para in doc.paragraphs])
-    except Exception as e:
-        logging.error(f"Error parsing docx file {file_path}: {e}")
-        return None
-
-def parse_doc(file_path):
-    try:
-        import textract
-        return textract.process(file_path).decode('utf-8')
-    except Exception as e:
-        logging.error(f"Error parsing doc file {file_path}: {e}")
-        return None
-
-def parse_pptx(file_path):
-    try:
-        from pptx import Presentation
-        prs = Presentation(file_path)
-        text_runs = []
-        for slide in prs.slides:
-            for shape in slide.shapes:
-                if hasattr(shape, "text"):
-                    text_runs.append(shape.text)
-        return "\n".join(text_runs)
-    except Exception as e:
-        logging.error(f"Error parsing pptx file {file_path}: {e}")
-        return None
-
-def parse_ppt(file_path):
-    try:
-        import textract
-        return textract.process(file_path).decode('utf-8')
-    except Exception as e:
-        logging.error(f"Error parsing ppt file {file_path}: {e}")
+        logging.error(f"Error parsing file {file_path}: {e}")
         return None
 
 
 def parse_file(file_path, extension):
     if extension == '.md':
         return parse_md(file_path)
-    elif extension == '.html':
-        return parse_html(file_path)
-    elif extension in ['.docx', '.doc', '.pptx', '.ppt']:
-        return parse_office_file(file_path, extension)
+    elif extension in ['.docx', '.doc', '.pptx', '.ppt', '.xlsx', '.xls', '.csv', '.json', '.xml','.html']:
+        return parse_to_md(file_path)
     else:
         raise ValueError(f"Unsupported file extension: {extension}")
 
