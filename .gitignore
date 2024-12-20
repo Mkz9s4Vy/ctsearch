@@ -1,5 +1,7 @@
 # personal data
 data/
+test/
+
 
 # conda
 compiler_compat/
