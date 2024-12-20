@@ -169,7 +169,7 @@ def search_index(query_str):
             with ix.searcher() as searcher:
                 parser = QueryParser("file_content", ix.schema)
                 query = parser.parse(query_str)
-                for hit in searcher.search(query):
+                for hit in searcher.search(query, limit=None):
                     file_path = hit["file_path"]
                     file_name = hit["file_name"]
                     folder_path = os.path.dirname(file_path)
